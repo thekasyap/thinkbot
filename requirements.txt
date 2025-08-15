@@ -1,0 +1,4 @@
+requests
+sentence-transformers
+pypdf
+numpy
