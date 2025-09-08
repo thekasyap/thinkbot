@@ -1,0 +1,14 @@
+{
+  "easy": [
+    {"id": 1, "question": "What is 1 + 1?", "answer": "2"},
+    {"id": 2, "question": "What is 2 + 0?", "answer": "2"}
+  ],
+  "medium": [
+    {"id": 3, "question": "What is 5 * 3?", "answer": "15"},
+    {"id": 4, "question": "What is 12 / 3?", "answer": "4"}
+  ],
+  "hard": [
+    {"id": 5, "question": "What is the derivative of x^2?", "answer": "2x"},
+    {"id": 6, "question": "Integrate 2x dx.", "answer": "x^2 + C"}
+  ]
+}
