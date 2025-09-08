@@ -1,4 +1,7 @@
-requests
 sentence-transformers
 pypdf
 numpy
+pytest
+google-genai
+fastapi
+uvicorn
