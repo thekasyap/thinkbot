@@ -1,19 +1,20 @@
-"""ThinkBot: A simple adaptive tutor using a local LLM and JSON storage.
+"""ThinkBot: A simple adaptive tutor using the Gemini API and JSON storage.
 
 This script provides two commands:
 
 * ``ingest <pdf>`` - load a PDF into the local knowledge base.
 * ``chat <student_name>`` - start an interactive tutoring session.
 
-The tutor uses a locally hosted model that exposes an OpenAI compatible
-chat-completions API (for example LM Studio or Ollama). Update the
-``API_URL`` and ``MODEL`` constants if your setup differs.
+The tutor talks to Google's `gemini-2.5-flash` model via the official
+`google-genai` SDK. Set the ``GEMINI_API_KEY`` environment variable before
+running the script.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import random
 import sys
 from dataclasses import dataclass, asdict
@@ -21,7 +22,8 @@ from pathlib import Path
 from typing import List
 
 import numpy as np
-import requests
+from google import genai
+from google.genai import types
 from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 
@@ -31,8 +33,10 @@ from sentence_transformers import SentenceTransformer
 DATA_DIR = Path("data")
 KNOWLEDGE_FILE = DATA_DIR / "knowledge.json"
 EMBED_MODEL = "all-MiniLM-L6-v2"
-API_URL = "http://localhost:11434/v1/chat/completions"  # LM Studio/Ollama
-MODEL = "deepseek-r1:latest"  # change if the local model name differs
+
+# Gemini configuration
+GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 # ---------------------------------------------------------------------------
@@ -109,12 +113,31 @@ def retrieve(query: str, k: int = 3) -> List[str]:
 # ---------------------------------------------------------------------------
 
 def call_llm(messages: List[dict]) -> str:
-    payload = {"model": MODEL, "messages": messages}
+    """Call the Gemini API and return the text response.
+
+    ``messages`` follows the OpenAI-style ``{"role": ..., "content": ...}`` format.
+    The function converts it to the Gemini ``contents`` structure.
+    """
+
+    if not GEMINI_API_KEY:
+        return "[Gemini API key not set]"
+
+    contents = [
+        types.Content(role=m["role"], parts=[types.Part.from_text(text=m["content"])])
+        for m in messages
+    ]
+
+    client = genai.Client(api_key=GEMINI_API_KEY)
+
     try:
-        resp = requests.post(API_URL, json=payload, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-        return data["choices"][0]["message"]["content"].strip()
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=contents,
+            config=types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_budget=0)
+            ),
+        )
+        return response.text.strip()
     except Exception as exc:  # pragma: no cover - networking
         return f"[Error contacting LLM: {exc}]"
 
