@@ -69,6 +69,7 @@ If your model endpoint or key differs, edit the constants at the top of
    API structure (including a root HTML route) is compatible with serverless
    hosts such as Vercel.
 
+
 ## Data Storage
 
 The `data/` folder contains JSON files for the knowledge base and each
