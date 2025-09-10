@@ -401,7 +401,7 @@ class StudentProfile:
         self.engagement_score = (accuracy_factor * 0.5 + time_factor * 0.3 + consistency_factor * 0.2)
 
     def get_learning_insights(self) -> dict:
-        """Generate insights for teachers/educators"""
+        """Generate comprehensive insights for teachers/educators with enhanced engagement tracking"""
         return {
             "student_name": self.name,
             "total_quizzes": self.quizzes,
@@ -413,8 +413,75 @@ class StudentProfile:
             "hesitation_score": round(self.hesitation_score, 2),
             "engagement_score": round(self.engagement_score, 2),
             "last_activity": self.last_activity,
-            "needs_attention": self.engagement_level in ["struggling", "moderate"] and self.accuracy < 0.5
+            "needs_attention": self.engagement_level in ["struggling", "moderate"] and self.accuracy < 0.5,
+            # Enhanced engagement metrics
+            "skip_rate": round(self.skip_rate * 100, 1),
+            "hint_dependency": round(self.hint_dependency * 100, 1),
+            "recent_performance": round(self.recent_performance * 100, 1),
+            "consistency_score": round(self.consistency_score, 1),
+            "learning_momentum": round(self.learning_momentum, 1),
+            "improvement_trend": round(self.improvement_trend, 1),
+            "topic_preferences": self.topic_preferences,
+            "difficulty_progression": self.difficulty_progression[-10:] if self.difficulty_progression else [],
+            # Engagement insights
+            "engagement_insights": self._get_engagement_insights()
         }
+
+    def _get_engagement_insights(self) -> dict:
+        """Generate specific insights about student engagement patterns"""
+        insights = {
+            "strengths": [],
+            "concerns": [],
+            "recommendations": []
+        }
+        
+        # Analyze strengths
+        if self.accuracy > 0.8:
+            insights["strengths"].append("High accuracy rate")
+        if self.consistency_score > 80:
+            insights["strengths"].append("Consistent performance")
+        if self.learning_momentum > 10:
+            insights["strengths"].append("Improving performance trend")
+        if self.skip_rate < 0.1:
+            insights["strengths"].append("Low skip rate - good persistence")
+        if self.hint_dependency < 0.3:
+            insights["strengths"].append("Independent problem solving")
+        
+        # Analyze concerns
+        if self.skip_rate > 0.3:
+            insights["concerns"].append("High skip rate - may indicate difficulty or disengagement")
+        if self.hint_dependency > 0.7:
+            insights["concerns"].append("Over-reliance on hints - may need confidence building")
+        if self.hesitation_score > 2.0:
+            insights["concerns"].append("High hesitation - may indicate uncertainty")
+        if self.learning_momentum < -10:
+            insights["concerns"].append("Declining performance trend")
+        if self.consistency_score < 40:
+            insights["concerns"].append("Inconsistent performance")
+        
+        # Generate recommendations
+        if self.engagement_level == "disengaged":
+            insights["recommendations"].append("Consider easier questions or different topics to rebuild confidence")
+        elif self.engagement_level == "struggling":
+            insights["recommendations"].append("Provide more hints and encouragement, consider breaking down complex topics")
+        elif self.engagement_level == "moderate":
+            insights["recommendations"].append("Mix of easy and challenging questions to maintain engagement")
+        elif self.engagement_level == "engaged":
+            insights["recommendations"].append("Continue current approach, gradually increase difficulty")
+        elif self.engagement_level == "highly_engaged":
+            insights["recommendations"].append("Provide advanced challenges and explore new topics")
+        
+        # Topic-specific recommendations
+        if self.topic_preferences:
+            best_topic = max(self.topic_preferences.items(), key=lambda x: x[1]["correct"] / x[1]["total"] if x[1]["total"] > 0 else 0)
+            worst_topic = min(self.topic_preferences.items(), key=lambda x: x[1]["correct"] / x[1]["total"] if x[1]["total"] > 0 else 0)
+            
+            if best_topic[1]["total"] > 3:
+                insights["recommendations"].append(f"Strong performance in {best_topic[0]} - use as confidence builder")
+            if worst_topic[1]["total"] > 3:
+                insights["recommendations"].append(f"Needs support in {worst_topic[0]} - consider additional practice")
+        
+        return insights
 
     def record(self, correct: bool) -> None:
         """Legacy method for backward compatibility"""

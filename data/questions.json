@@ -60,7 +60,7 @@
     {"id": 498, "question": "What color do you get when you mix lime and white?", "answer": "light lime", "topic": "colors", "hint": "A pale lime color"},
     {"id": 499, "question": "What color do you get when you mix lime and black?", "answer": "dark lime", "topic": "colors", "hint": "A deep, dark lime color"},
     {"id": 500, "question": "What color do you get when you mix rose and white?", "answer": "light rose", "topic": "colors", "hint": "A pale rose color"},
-    {"id": 501, "question": "What color do you get when you mix rose and black?", "answer": "dark rose", "topic": "colors", "hint": "A deep, dark rose color"}
+    {"id": 501, "question": "What color do you get when you mix rose and black?", "answer": "dark rose", "topic": "colors", "hint": "A deep, dark rose color"},
     {"id": 43, "question": "What color do you get when you mix red and white?", "answer": "pink", "topic": "colors", "hint": "A lighter shade of red"},
     {"id": 44, "question": "What color do you get when you mix black and white?", "answer": "gray", "topic": "colors", "hint": "A neutral color between black and white"},
     {"id": 45, "question": "What is the primary color that is not red or blue?", "answer": "yellow", "topic": "colors", "hint": "One of the three primary colors"},
@@ -145,7 +145,7 @@
     {"id": 357, "question": "What is 141 + 97?", "answer": "238", "topic": "arithmetic", "hint": "141 + 90 + 7 = 238"},
     {"id": 358, "question": "What is 195 - 147?", "answer": "48", "topic": "arithmetic", "hint": "195 - 140 - 7 = 48"},
     {"id": 359, "question": "What is 26 × 9?", "answer": "234", "topic": "arithmetic", "hint": "26 × 10 - 26 × 1 = 260 - 26 = 234"},
-    {"id": 360, "question": "What is 216 ÷ 36?", "answer": "6", "topic": "arithmetic", "hint": "How many times does 36 go into 216?"}
+    {"id": 360, "question": "What is 216 ÷ 36?", "answer": "6", "topic": "arithmetic", "hint": "How many times does 36 go into 216?"},
     {"id": 14, "question": "What is the area of a rectangle with length 5 and width 3?", "answer": "15", "topic": "geometry", "hint": "Area = length × width"},
     {"id": 15, "question": "What is 2^3 (2 to the power of 3)?", "answer": "8", "topic": "exponents", "hint": "2 × 2 × 2"},
     {"id": 401, "question": "What is 3^4 (3 to the power of 4)?", "answer": "81", "topic": "exponents", "hint": "3 × 3 × 3 × 3"},
@@ -197,7 +197,7 @@
     {"id": 447, "question": "What is 4^8 (4 to the power of 8)?", "answer": "65536", "topic": "exponents", "hint": "4 × 4 × 4 × 4 × 4 × 4 × 4 × 4"},
     {"id": 448, "question": "What is 5^7 (5 to the power of 7)?", "answer": "78125", "topic": "exponents", "hint": "5 × 5 × 5 × 5 × 5 × 5 × 5"},
     {"id": 449, "question": "What is 6^7 (6 to the power of 7)?", "answer": "279936", "topic": "exponents", "hint": "6 × 6 × 6 × 6 × 6 × 6 × 6"},
-    {"id": 450, "question": "What is 7^7 (7 to the power of 7)?", "answer": "823543", "topic": "exponents", "hint": "7 × 7 × 7 × 7 × 7 × 7 × 7"}
+    {"id": 450, "question": "What is 7^7 (7 to the power of 7)?", "answer": "823543", "topic": "exponents", "hint": "7 × 7 × 7 × 7 × 7 × 7 × 7"},
     {"id": 16, "question": "What is the square root of 16?", "answer": "4", "topic": "algebra", "hint": "What number times itself equals 16?"},
     {"id": 151, "question": "Solve for x: 2x + 5 = 13", "answer": "4", "topic": "algebra", "hint": "Subtract 5 from both sides, then divide by 2"},
     {"id": 152, "question": "Solve for x: 3x - 7 = 8", "answer": "5", "topic": "algebra", "hint": "Add 7 to both sides, then divide by 3"},
@@ -273,7 +273,7 @@
     {"id": 397, "question": "What is 11/16 ÷ 1/2?", "answer": "11/8", "topic": "fractions", "hint": "Multiply by reciprocal: 11/16 × 2/1 = 22/16 = 11/8"},
     {"id": 398, "question": "What is 6/13 as a decimal?", "answer": "0.462", "topic": "fractions", "hint": "Divide 6 by 13 (approximately 0.462)"},
     {"id": 399, "question": "What is 5/12 + 7/18?", "answer": "29/36", "topic": "fractions", "hint": "Find common denominator: 15/36 + 14/36 = 29/36"},
-    {"id": 400, "question": "What is 17/20 - 3/4?", "answer": "1/10", "topic": "fractions", "hint": "Find common denominator: 17/20 - 15/20 = 2/20 = 1/10"}
+    {"id": 400, "question": "What is 17/20 - 3/4?", "answer": "1/10", "topic": "fractions", "hint": "Find common denominator: 17/20 - 15/20 = 2/20 = 1/10"},
     {"id": 74, "question": "What is the area of a triangle with base 6 and height 4?", "answer": "12", "topic": "geometry", "hint": "Area = (1/2) × base × height"},
     {"id": 241, "question": "What is the area of a rectangle with length 8 and width 5?", "answer": "40", "topic": "geometry", "hint": "Area = length × width"},
     {"id": 242, "question": "What is the perimeter of a square with side length 7?", "answer": "28", "topic": "geometry", "hint": "Perimeter = 4 × side length"},
@@ -334,7 +334,7 @@
     {"id": 297, "question": "What is the volume of a rectangular prism with length 12, width 9, and height 6?", "answer": "648", "topic": "geometry", "hint": "Volume = length × width × height"},
     {"id": 298, "question": "What is the area of a trapezoid with bases 14 and 20, and height 8?", "answer": "136", "topic": "geometry", "hint": "Area = (1/2) × (base1 + base2) × height"},
     {"id": 299, "question": "What is the area of a square with side length 19?", "answer": "361", "topic": "geometry", "hint": "Area = side²"},
-    {"id": 300, "question": "What is the circumference of a circle with diameter 20? (Use π = 3.14)", "answer": "62.8", "topic": "geometry", "hint": "Circumference = π × diameter"}
+    {"id": 300, "question": "What is the circumference of a circle with diameter 20? (Use π = 3.14)", "answer": "62.8", "topic": "geometry", "hint": "Circumference = π × diameter"},
     {"id": 75, "question": "What is the area of a circle with radius 3?", "answer": "9π", "topic": "geometry", "hint": "Area = π × r²"},
     {"id": 76, "question": "What is the circumference of a circle with radius 2?", "answer": "4π", "topic": "geometry", "hint": "Circumference = 2π × radius"},
     {"id": 77, "question": "What is the volume of a cube with side length 3?", "answer": "27", "topic": "geometry", "hint": "Volume = side³"},

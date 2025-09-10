@@ -152,6 +152,83 @@
       border-bottom: none;
     }
 
+    .engagement-insights {
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+    }
+
+    .insights-section {
+      margin-bottom: 10px;
+    }
+
+    .insights-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .insights-section strong {
+      color: #667eea;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .insights-section ul {
+      margin: 0;
+      padding-left: 15px;
+      list-style-type: disc;
+    }
+
+    .insights-section li {
+      color: #e0e6ed;
+      font-size: 0.85rem;
+      margin-bottom: 3px;
+      line-height: 1.4;
+    }
+
+    .stat-value.positive {
+      color: #4ade80;
+    }
+
+    .stat-value.negative {
+      color: #f87171;
+    }
+
+    .engagement-badge {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .engagement-highly_engaged {
+      background: #10b981;
+      color: white;
+    }
+
+    .engagement-engaged {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .engagement-moderate {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .engagement-struggling {
+      background: #ef4444;
+      color: white;
+    }
+
+    .engagement-disengaged {
+      background: #6b7280;
+      color: white;
+    }
+
     .student-name {
       font-weight: 500;
       color: #2c3e50;
@@ -1455,7 +1532,7 @@
           </div>
         `;
 
-        // Student comparison
+        // Student comparison with enhanced engagement metrics
         const comparisonHtml = analytics.students.map(s => `
           <div class="student-comparison-item">
             <span class="student-name">${s.name || 'Unknown Student'}</span>
@@ -1463,8 +1540,28 @@
               <span class="stat-item">Accuracy: <span class="stat-value">${(s.accuracy || 0).toFixed(1)}%</span></span>
               <span class="stat-item">Questions: <span class="stat-value">${s.total_quizzes || 0}</span></span>
               <span class="stat-item">Level: <span class="stat-value">${s.learning_pace || 'Unknown'}</span></span>
-              <span class="stat-item">Engagement: <span class="stat-value">${s.engagement_level || 'Unknown'}</span></span>
+              <span class="stat-item">Engagement: <span class="stat-value engagement-badge engagement-${s.engagement_level || 'unknown'}">${(s.engagement_level || 'Unknown').replace('_', ' ')}</span></span>
+              <span class="stat-item">Score: <span class="stat-value">${(s.engagement_score || 0).toFixed(1)}</span></span>
+              <span class="stat-item">Skip Rate: <span class="stat-value">${(s.skip_rate || 0).toFixed(1)}%</span></span>
+              <span class="stat-item">Hints: <span class="stat-value">${(s.hint_dependency || 0).toFixed(1)}%</span></span>
+              <span class="stat-item">Momentum: <span class="stat-value ${s.learning_momentum > 0 ? 'positive' : s.learning_momentum < 0 ? 'negative' : ''}">${(s.learning_momentum || 0).toFixed(1)}</span></span>
             </div>
+            ${s.engagement_insights ? `
+              <div class="engagement-insights">
+                <div class="insights-section">
+                  <strong>Strengths:</strong>
+                  <ul>${(s.engagement_insights.strengths || []).map(strength => `<li>${strength}</li>`).join('')}</ul>
+                </div>
+                <div class="insights-section">
+                  <strong>Concerns:</strong>
+                  <ul>${(s.engagement_insights.concerns || []).map(concern => `<li>${concern}</li>`).join('')}</ul>
+                </div>
+                <div class="insights-section">
+                  <strong>Recommendations:</strong>
+                  <ul>${(s.engagement_insights.recommendations || []).map(rec => `<li>${rec}</li>`).join('')}</ul>
+                </div>
+              </div>
+            ` : ''}
           </div>
         `).join('');
         
