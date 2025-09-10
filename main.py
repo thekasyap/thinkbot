@@ -2,6 +2,7 @@
 
 Provides a minimal Gemini client and a small JSON-based ``StudentProfile`` to
 keep resource usage low for free-tier hosting such as Vercel's hobby plan.
+
 """
 
 from __future__ import annotations
@@ -14,8 +15,10 @@ from typing import List
 
 import requests
 
+
 # Directory where student progress JSON files are stored
 DATA_DIR = Path("data")
+
 
 # Gemini configuration
 GEMINI_MODEL = "gemini-2.5-flash"
@@ -56,6 +59,7 @@ def call_llm(messages: List[dict]) -> str:
         )
     except Exception as exc:  # pragma: no cover - network errors
         return f"[Gemini request failed: {exc}]"
+
 
 
 # ---------------------------------------------------------------------------

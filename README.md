@@ -6,6 +6,7 @@ hobby plan.  It serves a minimal HTML interface, tracks student accuracy in
 small JSON files, and calls Gemini's `gemini-2.5-flash` model using the public
 REST API with thinking disabled to conserve quota.
 
+
 ## Features
 - Lightweight FastAPI backend with a static front‑end served at the root path
 - Question bank with easy/medium/hard levels selected by learner accuracy
@@ -14,6 +15,7 @@ REST API with thinking disabled to conserve quota.
 
 ## Setup
 1. Install Python 3.9+ dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -29,6 +31,7 @@ REST API with thinking disabled to conserve quota.
 
 The project structure is Vercel‑compatible: placing `api/index.py` at the repo
 root lets Vercel serve the FastAPI app without extra configuration.
+
 
 ## Testing
 Run the automated tests to verify basic behaviour:

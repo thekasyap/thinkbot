@@ -54,3 +54,4 @@ def test_root_serves_html():
     res = client.get("/")
     assert res.status_code == 200
     assert "<!DOCTYPE html>" in res.text
+
