@@ -12,7 +12,7 @@ from fractions import Fraction
 from decimal import Decimal, InvalidOperation
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -38,6 +38,12 @@ app = FastAPI(title="ThinkBot API")
 
 # serve static files and root index for convenience when deployed
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# Serve favicon from static directory
+@app.get("/favicon.svg", include_in_schema=False)
+async def favicon() -> FileResponse:
+    """Return the site's favicon."""
+    return FileResponse(STATIC_DIR / "favicon.svg")
 
 
 def normalize_answer(answer: str) -> str:
@@ -309,9 +315,7 @@ def submit_answer(payload: AnswerPayload):
         correct=correct,
         response_time=payload.response_time,
         answer_changes=payload.answer_changes,
-        hints_used=payload.hints_used,
-        topic=q.get("topic", "general"),
-        skipped=payload.answer.lower().strip() == "skip" or payload.answer.lower().strip() == ""
+        hints_used=payload.hints_used
     )
     
     # Generate personalized feedback based on learning profile
