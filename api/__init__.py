@@ -203,7 +203,7 @@ def submit_answer(payload: AnswerPayload):
     
     correct = is_answer_correct(payload.answer, q["answer"])
     
-    # Record comprehensive session data
+    # Record comprehensive session data with enhanced engagement tracking
     profile.record_session(
         question_id=payload.question_id,
         difficulty=q["difficulty"],
@@ -211,7 +211,9 @@ def submit_answer(payload: AnswerPayload):
         correct=correct,
         response_time=payload.response_time,
         answer_changes=payload.answer_changes,
-        hints_used=payload.hints_used
+        hints_used=payload.hints_used,
+        topic=q.get("topic", "general"),
+        skipped=payload.answer.lower().strip() == "skip" or payload.answer.lower().strip() == ""
     )
     
     # Generate personalized feedback based on learning profile
