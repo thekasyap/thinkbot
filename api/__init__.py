@@ -385,6 +385,16 @@ def get_hint(question_id: int):
         "topic": q.get("topic", "general")
     }
 
+@app.post("/end-quiz-session")
+def end_quiz_session(student: str):
+    """End a quiz session for a student."""
+    try:
+        profile = StudentProfile.load(student)
+        profile.end_quiz_session()
+        return {"message": "Quiz session ended", "quiz_sessions": profile.quiz_sessions}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error ending quiz session: {str(e)}")
+
 @app.post("/generate-questions")
 def generate_new_questions(topic: str = None, count: int = 5):
     """Generate new questions using LLM API."""

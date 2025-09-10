@@ -91,6 +91,7 @@ class StudentProfile:
     total_answer_changes: int = 0
     total_hints_used: int = 0
     total_skipped: int = 0
+    quiz_sessions: int = 0  # track actual quiz sessions
     learning_sessions: List[dict] = None
     learning_style: str = "unknown"  # visual, auditory, kinesthetic, reading
     preferred_difficulty: str = "medium"
@@ -280,6 +281,9 @@ class StudentProfile:
                 data["learning_style"] = "unknown"
             if "preferred_difficulty" not in data:
                 data["preferred_difficulty"] = "medium"
+            if "quiz_sessions" not in data:
+                # For existing students, start with 1 quiz session
+                data["quiz_sessions"] = 1
             if "engagement_score" not in data:
                 data["engagement_score"] = 0.0
             if "last_activity" not in data:
@@ -349,6 +353,13 @@ class StudentProfile:
         self.last_activity = datetime.now().isoformat()
         self.save()
 
+    def end_quiz_session(self) -> None:
+        """End a quiz session - call this when a student clicks 'End Quiz'"""
+        from datetime import datetime
+        self.quiz_sessions += 1
+        self.last_activity = datetime.now().isoformat()
+        self.save()
+
     def _update_improvement_trend(self):
         """Calculate improvement trend based on recent vs historical performance"""
         if len(self.learning_sessions) < 10:
@@ -369,23 +380,119 @@ class StudentProfile:
         self.improvement_trend = (recent_accuracy - previous_accuracy) * 100
 
     def _update_learning_style(self) -> None:
-        """Analyze patterns to determine learning style"""
-        if len(self.learning_sessions) < 5:
+        """Analyze patterns to determine learning style using sophisticated behavioral analysis"""
+        if len(self.learning_sessions) < 10:  # Need more data for reliable analysis
             return
             
-        # Simple heuristic: fast responders might be visual learners
-        # Slow, careful responders might be reading learners
-        avg_time = self.average_response_time
-        accuracy = self.accuracy
+        # Analyze performance patterns across different question types and topics
+        style_scores = self._calculate_learning_style_scores()
         
-        if avg_time < 30 and accuracy > 0.7:
+        # Determine primary learning style based on highest score
+        if style_scores['visual'] > style_scores['auditory'] and style_scores['visual'] > style_scores['kinesthetic'] and style_scores['visual'] > style_scores['reading']:
             self.learning_style = "visual"
-        elif avg_time > 60 and accuracy > 0.6:
-            self.learning_style = "reading"
-        elif self.total_hints_used > self.quizzes * 0.3:
+        elif style_scores['auditory'] > style_scores['kinesthetic'] and style_scores['auditory'] > style_scores['reading']:
+            self.learning_style = "auditory"
+        elif style_scores['kinesthetic'] > style_scores['reading']:
             self.learning_style = "kinesthetic"
         else:
-            self.learning_style = "auditory"
+            self.learning_style = "reading"
+    
+    def _calculate_learning_style_scores(self) -> dict:
+        """Calculate learning style scores based on behavioral patterns"""
+        scores = {'visual': 0, 'auditory': 0, 'kinesthetic': 0, 'reading': 0}
+        
+        # Get recent sessions for analysis (last 20 or all if less)
+        recent_sessions = self.learning_sessions[-20:] if len(self.learning_sessions) >= 20 else self.learning_sessions
+        
+        if not recent_sessions:
+            return scores
+            
+        # 1. VISUAL LEARNER INDICATORS
+        # - Fast response to visual/spatial questions (geometry, patterns)
+        # - High accuracy on visual problems
+        # - Low hesitation on visual tasks
+        visual_questions = [s for s in recent_sessions if s.get('topic') in ['geometry', 'colors', 'patterns']]
+        if visual_questions:
+            visual_accuracy = sum(1 for s in visual_questions if s['correct']) / len(visual_questions)
+            visual_avg_time = sum(s['response_time'] for s in visual_questions) / len(visual_questions)
+            visual_hesitation = sum(s['answer_changes'] for s in visual_questions) / len(visual_questions)
+            
+            # Visual learners: high accuracy, fast response, low hesitation on visual tasks
+            scores['visual'] += visual_accuracy * 0.4  # 40% weight for accuracy
+            scores['visual'] += max(0, (60 - visual_avg_time) / 60) * 0.3  # 30% weight for speed
+            scores['visual'] += max(0, (2 - visual_hesitation) / 2) * 0.3  # 30% weight for low hesitation
+        
+        # 2. AUDITORY LEARNER INDICATORS
+        # - Consistent performance across all question types
+        # - Moderate response time (not too fast, not too slow)
+        # - Good performance on word-based problems
+        word_questions = [s for s in recent_sessions if s.get('topic') in ['geography', 'language', 'word_problems']]
+        if word_questions:
+            word_accuracy = sum(1 for s in word_questions if s['correct']) / len(word_questions)
+            scores['auditory'] += word_accuracy * 0.5
+        else:
+            # If no specific word questions, use overall consistency
+            scores['auditory'] += self.accuracy * 0.3
+            
+        # Consistency factor (auditory learners are consistent)
+        response_times = [s['response_time'] for s in recent_sessions]
+        if len(response_times) > 1:
+            time_variance = sum((t - self.average_response_time) ** 2 for t in response_times) / len(response_times)
+            consistency_score = max(0, 1 - (time_variance / 1000))  # Normalize variance
+            scores['auditory'] += consistency_score * 0.4
+        
+        # 3. KINESTHETIC LEARNER INDICATORS
+        # - High hint usage (hands-on learning approach)
+        # - Better performance on complex, multi-step problems
+        # - Learning through trial and error
+        hint_usage_rate = self.hint_dependency
+        scores['kinesthetic'] += min(hint_usage_rate, 1.0) * 0.4  # 40% weight for hint usage
+        
+        # Better on complex problems (hard difficulty)
+        complex_questions = [s for s in recent_sessions if s.get('difficulty') == 'hard']
+        if complex_questions:
+            complex_accuracy = sum(1 for s in complex_questions if s['correct']) / len(complex_questions)
+            scores['kinesthetic'] += complex_accuracy * 0.3
+            
+        # Trial and error pattern (answer changes indicate experimentation)
+        avg_changes = sum(s['answer_changes'] for s in recent_sessions) / len(recent_sessions)
+        if 0.5 <= avg_changes <= 2.0:  # Moderate experimentation
+            scores['kinesthetic'] += 0.3
+        
+        # 4. READING LEARNER INDICATORS
+        # - Slower, more methodical approach
+        # - High accuracy despite slower pace
+        # - Better on theoretical/conceptual questions
+        if self.average_response_time > 45:  # Slower approach
+            scores['reading'] += 0.3
+            
+        if self.accuracy > 0.6:  # High accuracy
+            scores['reading'] += self.accuracy * 0.4
+            
+        # Methodical approach (low skip rate, high completion)
+        skip_rate = self.skip_rate
+        scores['reading'] += max(0, (1 - skip_rate)) * 0.3
+        
+        # 5. ADJUSTMENTS BASED ON OVERALL PATTERNS
+        # Fast responders with high accuracy might be visual
+        if self.average_response_time < 25 and self.accuracy > 0.7:
+            scores['visual'] += 0.2
+            
+        # Slow responders with high accuracy might be reading
+        if self.average_response_time > 60 and self.accuracy > 0.6:
+            scores['reading'] += 0.2
+            
+        # High hint users might be kinesthetic
+        if hint_usage_rate > 0.3:
+            scores['kinesthetic'] += 0.2
+            
+        # Very consistent performers might be auditory
+        if len(response_times) > 5:
+            time_consistency = 1 - (max(response_times) - min(response_times)) / max(response_times)
+            if time_consistency > 0.7:
+                scores['auditory'] += 0.2
+        
+        return scores
 
     def _update_engagement_score(self) -> None:
         """Calculate engagement score based on multiple factors"""
@@ -399,6 +506,86 @@ class StudentProfile:
         consistency_factor = 1 - (self.hesitation_score / 3)  # Less hesitation = more consistent
         
         self.engagement_score = (accuracy_factor * 0.5 + time_factor * 0.3 + consistency_factor * 0.2)
+
+    def get_learning_style_analysis(self) -> dict:
+        """Get detailed learning style analysis with confidence scores"""
+        if len(self.learning_sessions) < 10:
+            return {
+                "primary_style": self.learning_style,
+                "confidence": "low",
+                "reasoning": "Insufficient data for reliable analysis (need at least 10 sessions)",
+                "scores": {},
+                "recommendations": []
+            }
+        
+        scores = self._calculate_learning_style_scores()
+        max_score = max(scores.values())
+        primary_style = max(scores, key=scores.get)
+        
+        # Calculate confidence based on score separation
+        sorted_scores = sorted(scores.values(), reverse=True)
+        confidence_score = (sorted_scores[0] - sorted_scores[1]) if len(sorted_scores) > 1 else 0
+        
+        if confidence_score > 0.3:
+            confidence = "high"
+        elif confidence_score > 0.15:
+            confidence = "medium"
+        else:
+            confidence = "low"
+        
+        # Generate reasoning
+        reasoning_parts = []
+        if scores['visual'] > 0.3:
+            reasoning_parts.append(f"Strong performance on visual/spatial tasks (score: {scores['visual']:.2f})")
+        if scores['auditory'] > 0.3:
+            reasoning_parts.append(f"Consistent performance across question types (score: {scores['auditory']:.2f})")
+        if scores['kinesthetic'] > 0.3:
+            reasoning_parts.append(f"High engagement with hints and complex problems (score: {scores['kinesthetic']:.2f})")
+        if scores['reading'] > 0.3:
+            reasoning_parts.append(f"Methodical approach with high accuracy (score: {scores['reading']:.2f})")
+        
+        reasoning = "; ".join(reasoning_parts) if reasoning_parts else "Balanced learning patterns across all styles"
+        
+        # Generate recommendations based on learning style
+        recommendations = self._get_learning_style_recommendations(primary_style)
+        
+        return {
+            "primary_style": primary_style,
+            "confidence": confidence,
+            "reasoning": reasoning,
+            "scores": {k: round(v, 3) for k, v in scores.items()},
+            "recommendations": recommendations
+        }
+    
+    def _get_learning_style_recommendations(self, style: str) -> list:
+        """Get personalized recommendations based on learning style"""
+        recommendations = {
+            "visual": [
+                "Use diagrams and visual aids when studying",
+                "Try drawing out problems before solving them",
+                "Look for patterns and visual relationships in math problems",
+                "Use color coding to organize information"
+            ],
+            "auditory": [
+                "Explain concepts out loud to yourself",
+                "Study with others and discuss problems",
+                "Use verbal repetition to memorize formulas",
+                "Listen to educational podcasts or videos"
+            ],
+            "kinesthetic": [
+                "Use hands-on activities and manipulatives",
+                "Try building models or using physical objects",
+                "Take breaks to move around while studying",
+                "Practice problems by writing them out step-by-step"
+            ],
+            "reading": [
+                "Read through problems carefully before solving",
+                "Take detailed notes and create written summaries",
+                "Use textbooks and written resources extensively",
+                "Write out your thought process for each problem"
+            ]
+        }
+        return recommendations.get(style, [])
 
     def get_learning_insights(self) -> dict:
         """Generate comprehensive insights for teachers/educators with enhanced engagement tracking"""
@@ -423,6 +610,8 @@ class StudentProfile:
             "improvement_trend": round(self.improvement_trend, 1),
             "topic_preferences": self.topic_preferences,
             "difficulty_progression": self.difficulty_progression[-10:] if self.difficulty_progression else [],
+            "learning_sessions": self.learning_sessions,
+            "quiz_sessions": self.quiz_sessions,
             # Engagement insights
             "engagement_insights": self._get_engagement_insights()
         }

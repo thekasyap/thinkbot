@@ -139,13 +139,49 @@
 
     .student-comparison-item {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
       padding: 12px;
       margin-bottom: 8px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
       border-bottom: none;
+      overflow: hidden;
+    }
+
+    .student-comparison-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .student-name {
+      font-weight: 600;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    .student-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .stat-item .stat-value {
+      font-weight: 600;
+      color: #4CAF50;
+      margin-top: 2px;
     }
 
     .student-comparison-item:last-child {
@@ -154,10 +190,11 @@
 
     .engagement-insights {
       margin-top: 15px;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 6px;
       border-left: 3px solid #667eea;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .insights-section {
@@ -169,10 +206,11 @@
     }
 
     .insights-section strong {
-      color: #667eea;
+      color: #1a365d;
       font-size: 0.9rem;
       display: block;
       margin-bottom: 5px;
+      font-weight: 600;
     }
 
     .insights-section ul {
@@ -182,7 +220,7 @@
     }
 
     .insights-section li {
-      color: #e0e6ed;
+      color: #2c3e50;
       font-size: 0.85rem;
       margin-bottom: 3px;
       line-height: 1.4;
@@ -514,6 +552,36 @@
       transform: translateY(-1px);
     }
 
+    .btn-dashboard {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 6px rgba(79, 70, 229, 0.3);
+      margin-left: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: none;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-dashboard:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 12px rgba(79, 70, 229, 0.4);
+      background: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #db2777 100%);
+    }
+
+    .btn-dashboard:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+    }
+
     .btn-hint {
       background: #17a2b8;
       color: white;
@@ -642,6 +710,381 @@
     .engagement-struggling { background: #f8d7da; color: #721c24; }
     .engagement-learning { background: #e2e3e5; color: #383d41; }
 
+    .learning-style-badge {
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .learning-style-visual { background: #3b82f6; color: white; }
+    .learning-style-auditory { background: #8b5cf6; color: white; }
+    .learning-style-kinesthetic { background: #f59e0b; color: white; }
+    .learning-style-reading { background: #10b981; color: white; }
+    .learning-style-unknown { background: #6b7280; color: white; }
+
+    /* Analytics Modal Styles */
+    #analytics-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .analytics-modal-content {
+      position: relative;
+      background-color: white;
+      margin: 2% auto;
+      padding: 0;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 95vw;
+      max-height: 95vh;
+      width: 1200px;
+      height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes modalSlideOut {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 2px solid #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .modal-header .close {
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 50%;
+      transition: background-color 0.3s;
+    }
+
+    .modal-header .close:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .analytics-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f8fafc;
+    }
+
+    .analytics-summary {
+      margin-bottom: 25px;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #667eea;
+    }
+
+    .summary-card h3 {
+      margin: 0 0 15px 0;
+      color: #2d3748;
+      font-size: 1.1rem;
+    }
+
+    .analytics-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-box input {
+      padding: 10px 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 300px;
+      transition: border-color 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 15px;
+    }
+
+    .filter-controls select {
+      padding: 10px 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+
+    .filter-controls select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .students-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .student-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #667eea;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .student-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .student-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .student-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .performance-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .performance-high { background: #d4edda; color: #155724; }
+    .performance-medium { background: #fff3cd; color: #856404; }
+    .performance-low { background: #f8d7da; color: #721c24; }
+
+    .student-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px;
+      background: #f8fafc;
+      border-radius: 6px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #718096;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .engagement-insights {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .insights-section {
+      margin-bottom: 10px;
+    }
+
+    .insights-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .insights-section strong {
+      color: #1a365d;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .insights-section li {
+      color: #2c3e50;
+      font-size: 0.85rem;
+      margin-bottom: 3px;
+      line-height: 1.4;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .analytics-modal-content {
+        width: 95vw;
+        height: 95vh;
+        margin: 5% auto;
+      }
+
+      .summary-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .analytics-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box input {
+        width: 100%;
+      }
+
+      .filter-controls {
+        justify-content: space-between;
+      }
+
+      .students-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .student-stats {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .analytics-modal-content {
+        width: 98vw;
+        height: 98vh;
+        margin: 1% auto;
+      }
+
+      .modal-header {
+        padding: 15px;
+      }
+
+      .modal-header h2 {
+        font-size: 1.2rem;
+      }
+
+      .analytics-modal-body {
+        padding: 15px;
+      }
+    }
+
+    /* Performance bars */
+    .performance-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .performance-bar {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .bar-label {
+      min-width: 120px;
+      font-size: 0.9rem;
+      color: #4a5568;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 20px;
+      background: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+
+    .bar-fill.high { background: #48bb78; }
+    .bar-fill.medium { background: #ed8936; }
+    .bar-fill.low { background: #f56565; }
+
+    .bar-value {
+      min-width: 30px;
+      text-align: center;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
     .learning-style {
       padding: 4px 12px;
       border-radius: 15px;
@@ -743,6 +1186,19 @@
       .quiz-card {
         padding: 20px;
       }
+
+      .card-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .btn-dashboard {
+        margin-left: 0;
+        align-self: flex-start;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+      }
       
       .student-comparison-item {
         flex-direction: column;
@@ -843,17 +1299,13 @@
     }
 
     .icon-linkedin {
-      background: linear-gradient(135deg, #0077b5, #005885);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #0077b5 !important;
+      text-shadow: 0 0 3px rgba(0, 119, 181, 0.3);
     }
 
     .icon-instagram {
-      background: linear-gradient(135deg, #e4405f, #c13584, #833ab4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #e4405f !important;
+      text-shadow: 0 0 3px rgba(228, 64, 95, 0.3);
     }
 
     /* Mobile responsiveness for credits */
@@ -883,6 +1335,62 @@
       }
     }
 
+    /* Mobile responsiveness for analytics */
+    @media (max-width: 768px) {
+      .student-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+      
+      .stat-item {
+        font-size: 0.8rem;
+        padding: 6px 4px;
+      }
+      
+      .engagement-insights {
+        font-size: 0.85rem;
+        padding: 10px;
+      }
+      
+      .insights-section {
+        margin-bottom: 8px;
+      }
+      
+      .insights-section li {
+        color: #2c3e50;
+        font-size: 0.8rem;
+      }
+      
+      .insights-section strong {
+        color: #1a365d;
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .student-stats {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      
+      .stat-item {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+      }
+      
+      .insights-section li {
+        color: #2c3e50;
+        font-size: 0.75rem;
+      }
+      
+      .insights-section strong {
+        color: #1a365d;
+        font-size: 0.8rem;
+      }
+    }
+
     /* Subtle animation for the credits */
     @keyframes creditsFadeIn {
       from {
@@ -897,6 +1405,125 @@
 
     .developer-credits {
       animation: creditsFadeIn 0.8s ease-out 1s both;
+    }
+
+    /* Start Now Button Styles */
+    .start-now-section {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 15px;
+      margin: 20px 0;
+      border: 2px dashed #dee2e6;
+      transition: all 0.3s ease;
+    }
+
+    .start-now-section:hover {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #f0f2ff 0%, #e6e9ff 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    }
+
+    .start-now-content h3 {
+      color: #2c3e50;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .start-now-content p {
+      color: #6c757d;
+      font-size: 1rem;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .btn-start-now {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-start-now:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+      background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    }
+
+    .btn-start-now:active {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-start-now i {
+      font-size: 1rem;
+    }
+
+    /* Animation for start now button */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .btn-start-now {
+      animation: pulse 2s infinite;
+    }
+
+    .btn-start-now:hover {
+      animation: none;
+    }
+
+    /* Start Now Features */
+    .start-now-features {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: #495057;
+      font-weight: 500;
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      background: rgba(102, 126, 234, 0.1);
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    /* Mobile responsiveness for features */
+    @media (max-width: 768px) {
+      .start-now-features {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .feature-item {
+        width: 100%;
+        text-align: center;
+        max-width: 200px;
+      }
     }
   </style>
 </head>
@@ -946,13 +1573,29 @@
           <div class="timer-text">Time: <span id="timer-display">0</span>s</div>
         </div>
 
-        <div class="answer-section">
+        <div class="answer-section" id="answer-section" style="display: none;">
           <input type="text" id="answer" class="answer-input" placeholder="Enter your answer..." />
           <div class="button-group">
             <button class="btn btn-primary" onclick="submitAnswer()">Submit Answer</button>
             <button class="btn btn-hint" onclick="getHint()">Get Hint</button>
             <button class="btn btn-secondary" onclick="skipQuestion()">Skip</button>
             <button class="btn btn-danger" onclick="endQuiz()">End Quiz</button>
+          </div>
+        </div>
+
+        <!-- Start Now Button - shown when no active quiz session -->
+        <div id="start-now-section" class="start-now-section" style="display: none;">
+          <div class="start-now-content">
+            <h3>🎯 Ready to Start Learning?</h3>
+            <p>Begin your personalized quiz session and track your progress!</p>
+            <button class="btn btn-primary btn-start-now" onclick="startNow()">
+              <i class="fas fa-play"></i> Start Now
+            </button>
+            <div class="start-now-features">
+              <div class="feature-item">📊 Track your progress</div>
+              <div class="feature-item">🎯 Adaptive difficulty</div>
+              <div class="feature-item">💡 Get instant feedback</div>
+            </div>
           </div>
         </div>
 
@@ -988,23 +1631,14 @@
         </div>
 
         <div class="analytics-card">
-          <div class="card-title" onclick="toggleAnalytics()" style="cursor: pointer;">
-            👥 All Students Analytics <span id="analytics-toggle">▼</span>
+          <div class="card-title">
+            👥 All Students Analytics 
+            <button id="open-analytics-modal" class="btn-dashboard" onclick="openAnalyticsModal()">📊 View Detailed Dashboard</button>
           </div>
           <div id="analytics-content" style="display: none;">
             <div class="loading">
               <div class="spinner"></div>
               <div>Loading analytics...</div>
-            </div>
-          </div>
-          <div id="detailed-analytics" style="display: none;">
-            <div class="analytics-section">
-              <h4>📈 Class Overview</h4>
-              <div id="class-overview"></div>
-            </div>
-            <div class="analytics-section">
-              <h4>👥 Student Comparison</h4>
-              <div id="student-comparison"></div>
             </div>
           </div>
         </div>
@@ -1020,6 +1654,54 @@
         <button class="close-btn" onclick="closeAnalysis()">✕</button>
       </div>
       <div id="analysis-details"></div>
+    </div>
+  </div>
+
+  <!-- Analytics Modal -->
+  <div id="analytics-modal" class="modal">
+    <div class="modal-content analytics-modal-content">
+      <div class="modal-header">
+        <h2>📊 Detailed Analytics Dashboard</h2>
+        <span class="close" onclick="closeAnalyticsModal()">&times;</span>
+      </div>
+      <div class="analytics-modal-body">
+        <div class="analytics-summary">
+          <div class="summary-cards">
+            <div class="summary-card">
+              <h3>📈 Class Overview</h3>
+              <div id="class-overview-stats"></div>
+            </div>
+            <div class="summary-card">
+              <h3>🎯 Performance Distribution</h3>
+              <div id="performance-distribution"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="analytics-controls">
+          <div class="search-box">
+            <input type="text" id="student-search" placeholder="🔍 Search students..." onkeyup="filterStudents()">
+          </div>
+          <div class="filter-controls">
+            <select id="performance-filter" onchange="filterStudents()">
+              <option value="all">All Students</option>
+              <option value="high">High Performers</option>
+              <option value="medium">Medium Performers</option>
+              <option value="low">Struggling Students</option>
+            </select>
+            <select id="sort-by" onchange="sortStudents()">
+              <option value="name">Sort by Name</option>
+              <option value="accuracy">Sort by Accuracy</option>
+              <option value="engagement">Sort by Engagement</option>
+              <option value="questions">Sort by Questions</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="students-grid" id="students-grid">
+          <!-- Student cards will be populated here -->
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1045,6 +1727,9 @@
     
     // Report modal state
     let isReportOpen = false;
+    
+    // Quiz state tracking
+    let isQuizActive = false;
 
     // Initialize the application
     async function init() {
@@ -1052,13 +1737,42 @@
       student = localStorage.getItem('student');
       if (student) {
         document.getElementById('student-select').value = student;
+        // Hide quiz interface and show start now section for existing student
+        document.getElementById('answer-section').style.display = 'none';
+        document.getElementById('start-now-section').style.display = 'block';
+        document.getElementById('question').textContent = 'Welcome back! Ready to continue learning?';
+        document.getElementById('difficulty-badge').textContent = '';
+        document.getElementById('answer').value = '';
+        document.getElementById('timer').style.display = 'none';
+        await loadProfile();
+        await loadAnalytics();
       } else {
         showNewStudentForm();
       }
+    }
+
+    // Start Now function - begins a new quiz session
+    function startNow() {
+      // Hide start now section
+      document.getElementById('start-now-section').style.display = 'none';
       
-      await loadQuestion();
-      await loadProfile();
-      await loadAnalytics();
+      // Show quiz interface
+      document.getElementById('answer-section').style.display = 'block';
+      
+      // Set quiz as active
+      isQuizActive = true;
+      
+      // Reset session stats for new quiz
+      sessionStats = {
+        questionsAnswered: 0,
+        correctAnswers: 0,
+        skippedQuestions: 0,
+        totalResponseTime: 0,
+        sessionStartTime: null
+      };
+      
+      // Load first question
+      loadQuestion();
     }
 
     // Load a new question
@@ -1083,6 +1797,9 @@
         document.getElementById('feedback-section').style.display = 'none';
         document.getElementById('hint-section').style.display = 'none';
         document.getElementById('timer').style.display = 'block';
+        
+        // Hide start now section when quiz is active
+        document.getElementById('start-now-section').style.display = 'none';
         
         // Ensure submit button is restored for new question
         const submitBtn = document.querySelector('button[onclick="submitAnswer()"]');
@@ -1285,6 +2002,9 @@
     // Skip question
     async function skipQuestion() {
       if (confirm('Are you sure you want to skip this question?')) {
+        // Show loading state immediately
+        showLoading();
+        
         // Stop current timer
         stopTimer();
         
@@ -1311,8 +2031,8 @@
           });
           
           if (response.ok) {
-            // Load analytics to update the display
-            await loadAnalytics();
+            // Load analytics in background without blocking
+            loadAnalytics();
           }
         } catch (error) {
           console.error('Error submitting skip:', error);
@@ -1323,8 +2043,8 @@
         hintsUsed = 0;
         
         // Load new question
-        loadQuestion();
-      }
+      loadQuestion();
+    }
     }
 
     // Timer functions
@@ -1349,14 +2069,21 @@
         const res = await fetch(`/analytics/${student}`);
         const profile = await res.json();
         
+        // Use backend quiz_sessions count
+        const quizSessions = profile.quiz_sessions || 0;
+        
         document.getElementById('profile-content').innerHTML = `
           <div class="stat-item">
             <span class="stat-label">Name:</span>
             <span class="stat-value">${profile.student_name}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Quizzes:</span>
+            <span class="stat-label">Questions Attempted:</span>
             <span class="stat-value">${profile.total_quizzes}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Quiz Sessions:</span>
+            <span class="stat-value">${quizSessions}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Accuracy:</span>
@@ -1384,6 +2111,18 @@
         `;
       } catch (error) {
         console.error('Error loading profile:', error);
+      }
+    }
+
+    // Load detailed learning style analysis
+    async function loadLearningStyleAnalysis(student) {
+      try {
+        const res = await fetch(`/learning-style/${student}`);
+        const analysis = await res.json();
+        return analysis;
+      } catch (error) {
+        console.error('Error loading learning style analysis:', error);
+        return null;
       }
     }
 
@@ -1473,13 +2212,24 @@
           sessionStartTime: null
         };
         
+        // Reset quiz state
+        isQuizActive = false;
+        
         // Reset UI state
         document.getElementById('feedback-section').style.display = 'none';
         document.getElementById('feedback-actions').style.display = 'none';
         document.getElementById('hint-section').style.display = 'none';
-        document.getElementById('timer').style.display = 'block';
+        document.getElementById('timer').style.display = 'none';
+        document.getElementById('answer-section').style.display = 'none';
         
-        await loadQuestion();
+        // Show start now section for new student
+        document.getElementById('start-now-section').style.display = 'block';
+        
+        // Clear question area
+        document.getElementById('question').textContent = 'Select a student to begin your learning journey!';
+        document.getElementById('difficulty-badge').textContent = '';
+        document.getElementById('answer').value = '';
+        
         await loadProfile();
         await loadAnalytics();
       }
@@ -1498,7 +2248,22 @@
         student = trimmedName;
         localStorage.setItem('student', student);
         document.getElementById('student-select').value = student;
-    loadQuestion();
+        
+        // Reset quiz state for new student
+        isQuizActive = false;
+        
+        // Hide quiz interface
+        document.getElementById('answer-section').style.display = 'none';
+        document.getElementById('timer').style.display = 'none';
+        
+        // Show start now section for new student
+        document.getElementById('start-now-section').style.display = 'block';
+        
+        // Clear question area
+        document.getElementById('question').textContent = 'Welcome! Ready to start your learning journey?';
+        document.getElementById('difficulty-badge').textContent = '';
+        document.getElementById('answer').value = '';
+        
         loadProfile();
         loadAnalytics();
       }
@@ -1512,23 +2277,321 @@
       }
     }
 
-    // Toggle analytics expansion
-    function toggleAnalytics() {
-      analyticsExpanded = !analyticsExpanded;
-      const content = document.getElementById('analytics-content');
-      const detailed = document.getElementById('detailed-analytics');
-      const toggle = document.getElementById('analytics-toggle');
+    // Open analytics modal
+    function openAnalyticsModal() {
+      const modal = document.getElementById('analytics-modal');
+      modal.style.display = 'block';
+      loadAnalyticsModalData();
+    }
+
+    // Close analytics modal
+    function closeAnalyticsModal() {
+      const modal = document.getElementById('analytics-modal');
+      const content = modal.querySelector('.analytics-modal-content');
       
-      if (analyticsExpanded) {
-        content.style.display = 'block';
-        detailed.style.display = 'block';
-        toggle.textContent = '▲';
-        loadDetailedAnalytics();
-      } else {
-        content.style.display = 'none';
-        detailed.style.display = 'none';
-        toggle.textContent = '▼';
+      // Add close animation
+      content.style.animation = 'modalSlideOut 0.3s ease-in forwards';
+      
+      setTimeout(() => {
+        modal.style.display = 'none';
+        content.style.animation = 'modalSlideIn 0.3s ease-out';
+      }, 300);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const analyticsModal = document.getElementById('analytics-modal');
+      if (event.target === analyticsModal) {
+        closeAnalyticsModal();
       }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const analyticsModal = document.getElementById('analytics-modal');
+        if (analyticsModal.style.display === 'block') {
+          closeAnalyticsModal();
+        }
+      }
+    });
+
+    // Load data for analytics modal
+    async function loadAnalyticsModalData() {
+      try {
+        const res = await fetch('/analytics');
+        const analytics = await res.json();
+        
+        
+        // Update class overview
+        updateClassOverview(analytics);
+        
+        // Update performance distribution
+        updatePerformanceDistribution(analytics);
+        
+        // Load students data
+        loadStudentsGrid(analytics);
+        
+      } catch (error) {
+        console.error('Error loading analytics modal data:', error);
+      }
+    }
+
+    // Update class overview stats
+    function updateClassOverview(analytics) {
+      const container = document.getElementById('class-overview-stats');
+      const students = analytics.students || [];
+      const summary = analytics.summary || {};
+      
+      container.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-number">${students.length}</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">${summary.high_performers || 0}</div>
+            <div class="stat-label">High Performers</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">${summary.struggling_students || 0}</div>
+            <div class="stat-label">Need Attention</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">${(summary.average_accuracy || 0).toFixed(1)}%</div>
+            <div class="stat-label">Avg Accuracy</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Update performance distribution
+    function updatePerformanceDistribution(analytics) {
+      const container = document.getElementById('performance-distribution');
+      const students = analytics.students || [];
+      
+      const high = students.filter(s => (s.accuracy || 0) >= 70).length;
+      const medium = students.filter(s => (s.accuracy || 0) >= 40 && (s.accuracy || 0) < 70).length;
+      const low = students.filter(s => (s.accuracy || 0) < 40).length;
+      
+      container.innerHTML = `
+        <div class="performance-bars">
+          <div class="performance-bar">
+            <div class="bar-label">High (70%+)</div>
+            <div class="bar-container">
+              <div class="bar-fill high" style="width: ${(high / students.length * 100) || 0}%"></div>
+            </div>
+            <div class="bar-value">${high}</div>
+          </div>
+          <div class="performance-bar">
+            <div class="bar-label">Medium (40-69%)</div>
+            <div class="bar-container">
+              <div class="bar-fill medium" style="width: ${(medium / students.length * 100) || 0}%"></div>
+            </div>
+            <div class="bar-value">${medium}</div>
+          </div>
+          <div class="performance-bar">
+            <div class="bar-label">Low (<40%)</div>
+            <div class="bar-container">
+              <div class="bar-fill low" style="width: ${(low / students.length * 100) || 0}%"></div>
+            </div>
+            <div class="bar-value">${low}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Load students grid
+    function loadStudentsGrid(analytics) {
+      const container = document.getElementById('students-grid');
+      const students = analytics.students || [];
+      container.innerHTML = students.map(student => createStudentCard(student)).join('');
+    }
+
+    // Create student card
+    function createStudentCard(student) {
+      const accuracy = student.accuracy || 0;
+      const performance = accuracy >= 70 ? 'high' : accuracy >= 40 ? 'medium' : 'low';
+      
+      return `
+        <div class="student-card" data-name="${student.name || 'Unknown'}" data-accuracy="${accuracy}" data-engagement="${student.engagement_score || 0}" data-questions="${student.total_quizzes || 0}">
+          <div class="student-header">
+            <div class="student-name">${student.name || 'Unknown Student'}</div>
+            <div class="performance-badge performance-${performance}">${performance}</div>
+          </div>
+          
+          <div class="student-stats">
+            <div class="stat-item">
+              <div class="stat-label">Accuracy</div>
+              <div class="stat-value">${accuracy.toFixed(1)}%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Questions</div>
+              <div class="stat-value">${student.total_quizzes || 0}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Engagement</div>
+              <div class="stat-value">${(student.engagement_score || 0).toFixed(1)}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Response Time</div>
+              <div class="stat-value">${(student.average_response_time || 0).toFixed(1)}s</div>
+            </div>
+          </div>
+          
+          ${student.engagement_insights ? `
+            <div class="engagement-insights">
+              ${student.engagement_insights.strengths ? `
+                <div class="insights-section">
+                  <strong>Strengths:</strong>
+                  <ul>
+                    ${student.engagement_insights.strengths.map(s => `<li>${s}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+              ${student.engagement_insights.concerns ? `
+                <div class="insights-section">
+                  <strong>Concerns:</strong>
+                  <ul>
+                    ${student.engagement_insights.concerns.map(c => `<li>${c}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+              ${student.engagement_insights.recommendations ? `
+                <div class="insights-section">
+                  <strong>Recommendations:</strong>
+                  <ul>
+                    ${student.engagement_insights.recommendations.map(r => `<li>${r}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // Filter students
+    function filterStudents() {
+      const searchTerm = document.getElementById('student-search').value.toLowerCase();
+      const performanceFilter = document.getElementById('performance-filter').value;
+      const cards = document.querySelectorAll('.student-card');
+      
+      cards.forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        const accuracy = parseFloat(card.dataset.accuracy);
+        
+        let show = true;
+        
+        // Search filter
+        if (searchTerm && !name.includes(searchTerm)) {
+          show = false;
+        }
+        
+        // Performance filter
+        if (performanceFilter !== 'all') {
+          if (performanceFilter === 'high' && accuracy < 70) show = false;
+          if (performanceFilter === 'medium' && (accuracy < 40 || accuracy >= 70)) show = false;
+          if (performanceFilter === 'low' && accuracy >= 40) show = false;
+        }
+        
+        card.style.display = show ? 'block' : 'none';
+      });
+    }
+
+    // Sort students
+    function sortStudents() {
+      const sortBy = document.getElementById('sort-by').value;
+      const container = document.getElementById('students-grid');
+      const cards = Array.from(container.querySelectorAll('.student-card'));
+      
+      cards.sort((a, b) => {
+        switch (sortBy) {
+          case 'name':
+            return a.dataset.name.localeCompare(b.dataset.name);
+          case 'accuracy':
+            return parseFloat(b.dataset.accuracy) - parseFloat(a.dataset.accuracy);
+          case 'engagement':
+            return parseFloat(b.dataset.engagement) - parseFloat(a.dataset.engagement);
+          case 'questions':
+            return parseFloat(b.dataset.questions) - parseFloat(a.dataset.questions);
+          default:
+            return 0;
+        }
+      });
+      
+      cards.forEach(card => container.appendChild(card));
+    }
+
+    // Toggle learning style details
+    async function toggleLearningStyleDetails() {
+      const details = document.getElementById('learning-style-details');
+      const button = document.getElementById('toggle-learning-style');
+      const content = document.getElementById('learning-style-content');
+      
+      if (details.style.display === 'none') {
+        // Show details
+        details.style.display = 'block';
+        button.textContent = 'Hide Detailed Analysis';
+        
+        // Load detailed analysis if not already loaded
+        if (content.textContent === 'Loading detailed analysis...') {
+          const analysis = await loadLearningStyleAnalysis(student);
+          if (analysis) {
+            content.innerHTML = generateLearningStyleDetails(analysis);
+      } else {
+            content.innerHTML = '<p style="color: #f87171;">Error loading learning style analysis</p>';
+          }
+        }
+      } else {
+        // Hide details
+        details.style.display = 'none';
+        button.textContent = 'Show Detailed Analysis';
+      }
+    }
+
+    // Generate learning style details HTML
+    function generateLearningStyleDetails(analysis) {
+      const confidenceColors = {
+        'high': '#10b981',
+        'medium': '#f59e0b', 
+        'low': '#f87171'
+      };
+      
+      const confidenceColor = confidenceColors[analysis.confidence] || '#6b7280';
+      
+      let scoresHtml = '';
+      if (analysis.scores && Object.keys(analysis.scores).length > 0) {
+        scoresHtml = '<div class="style-scores" style="margin-top: 10px;"><h5>Style Scores:</h5><div class="scores-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px;">';
+        for (const [style, score] of Object.entries(analysis.scores)) {
+          const percentage = Math.round(score * 100);
+          scoresHtml += `<div class="score-item" style="display: flex; justify-content: space-between; padding: 4px 8px; background: rgba(255,255,255,0.1); border-radius: 4px;"><span style="text-transform: capitalize;">${style}:</span><span style="font-weight: 600;">${percentage}%</span></div>`;
+        }
+        scoresHtml += '</div></div>';
+      }
+      
+      let recommendationsHtml = '';
+      if (analysis.recommendations && analysis.recommendations.length > 0) {
+        recommendationsHtml = '<div class="style-recommendations" style="margin-top: 10px;"><h5>Personalized Recommendations:</h5><ul style="margin: 8px 0; padding-left: 20px;">';
+        analysis.recommendations.forEach(rec => {
+          recommendationsHtml += `<li style="margin: 4px 0; color: #e5e7eb;">${rec}</li>`;
+        });
+        recommendationsHtml += '</ul></div>';
+      }
+      
+      return `
+        <div class="learning-style-analysis">
+          <div class="analysis-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h5 style="margin: 0; color: #f3f4f6;">Learning Style Analysis</h5>
+            <span class="confidence-badge" style="padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; background: ${confidenceColor}; color: white;">
+              ${analysis.confidence.toUpperCase()} CONFIDENCE
+            </span>
+          </div>
+          <p style="margin: 8px 0; color: #d1d5db; font-size: 0.9rem;">${analysis.reasoning}</p>
+          ${scoresHtml}
+          ${recommendationsHtml}
+        </div>
+      `;
     }
 
     // Load detailed analytics with student comparison
@@ -1560,16 +2623,42 @@
         // Student comparison with enhanced engagement metrics
         const comparisonHtml = analytics.students.map(s => `
           <div class="student-comparison-item">
+            <div class="student-comparison-header">
             <span class="student-name">${s.name || 'Unknown Student'}</span>
+            </div>
             <div class="student-stats">
-              <span class="stat-item">Accuracy: <span class="stat-value">${(s.accuracy || 0).toFixed(1)}%</span></span>
-              <span class="stat-item">Questions: <span class="stat-value">${s.total_quizzes || 0}</span></span>
-              <span class="stat-item">Level: <span class="stat-value">${s.learning_pace || 'Unknown'}</span></span>
-              <span class="stat-item">Engagement: <span class="stat-value engagement-badge engagement-${s.engagement_level || 'unknown'}">${(s.engagement_level || 'Unknown').replace('_', ' ')}</span></span>
-              <span class="stat-item">Score: <span class="stat-value">${(s.engagement_score || 0).toFixed(1)}</span></span>
-              <span class="stat-item">Skip Rate: <span class="stat-value">${(s.skip_rate || 0).toFixed(1)}%</span></span>
-              <span class="stat-item">Hints: <span class="stat-value">${(s.hint_dependency || 0).toFixed(1)}%</span></span>
-              <span class="stat-item">Momentum: <span class="stat-value ${s.learning_momentum > 0 ? 'positive' : s.learning_momentum < 0 ? 'negative' : ''}">${(s.learning_momentum || 0).toFixed(1)}</span></span>
+              <div class="stat-item">
+                <span>Accuracy</span>
+                <span class="stat-value">${(s.accuracy || 0).toFixed(1)}%</span>
+              </div>
+              <div class="stat-item">
+                <span>Questions</span>
+                <span class="stat-value">${s.total_quizzes || 0}</span>
+              </div>
+              <div class="stat-item">
+                <span>Level</span>
+                <span class="stat-value">${s.learning_pace || 'Unknown'}</span>
+              </div>
+              <div class="stat-item">
+                <span>Engagement</span>
+                <span class="stat-value engagement-badge engagement-${s.engagement_level || 'unknown'}">${(s.engagement_level || 'Unknown').replace('_', ' ')}</span>
+              </div>
+              <div class="stat-item">
+                <span>Score</span>
+                <span class="stat-value">${(s.engagement_score || 0).toFixed(1)}</span>
+              </div>
+              <div class="stat-item">
+                <span>Skip Rate</span>
+                <span class="stat-value">${(s.skip_rate || 0).toFixed(1)}%</span>
+              </div>
+              <div class="stat-item">
+                <span>Hints</span>
+                <span class="stat-value">${(s.hint_dependency || 0).toFixed(1)}%</span>
+              </div>
+              <div class="stat-item">
+                <span>Momentum</span>
+                <span class="stat-value ${s.learning_momentum > 0 ? 'positive' : s.learning_momentum < 0 ? 'negative' : ''}">${(s.learning_momentum || 0).toFixed(1)}</span>
+              </div>
             </div>
             ${s.engagement_insights ? `
               <div class="engagement-insights">
@@ -1637,7 +2726,7 @@
       document.getElementById('analysis-modal').style.display = 'none';
       // Stop any running timer
       stopTimer();
-      // If we closed the end-quiz report, reset the session stats
+      // If we closed the end-quiz report, reset the session stats and show start now
       if (isReportOpen) {
         sessionStats = {
           questionsAnswered: 0,
@@ -1647,14 +2736,30 @@
           sessionStartTime: null
         };
         isReportOpen = false;
+        
+        // Hide quiz interface and show start now section after closing report
+        document.getElementById('answer-section').style.display = 'none';
+        document.getElementById('start-now-section').style.display = 'block';
+        document.getElementById('question').textContent = 'Great job! Ready for another quiz session?';
+        document.getElementById('difficulty-badge').textContent = '';
+        document.getElementById('answer').value = '';
       }
     }
 
     // End quiz and show comprehensive report
+    let isEndingQuiz = false; // Flag to prevent multiple calls
+
     async function endQuiz() {
+      if (isEndingQuiz) return; // Prevent multiple calls
+      
       if (confirm('Are you sure you want to end the quiz? You will see a comprehensive report.')) {
+        isEndingQuiz = true; // Set flag
+        
         // Stop timer
         stopTimer();
+        
+        // Set quiz as inactive
+        isQuizActive = false;
         
         // Hide timer display
         document.getElementById('timer').style.display = 'none';
@@ -1664,12 +2769,17 @@
         document.getElementById('feedback-actions').style.display = 'none';
         document.getElementById('hint-section').style.display = 'none';
         
+        // End quiz session on backend
+        await endQuizSession();
+        
         // Load final analytics
         await loadProfile();
         await loadAnalytics();
         
         // Show comprehensive report
         showComprehensiveReport();
+        
+        isEndingQuiz = false; // Reset flag
       }
     }
 
@@ -1733,8 +2843,14 @@
             <div class="profile-info">
               <p><strong>Engagement Level:</strong> <span class="engagement-badge ${engagementLevel}">${engagementLevel.replace('_', ' ').toUpperCase()}</span></p>
               <p><strong>Learning Pace:</strong> <span class="pace-badge ${learningPace}">${learningPace.toUpperCase()}</span></p>
-              <p><strong>Learning Style:</strong> ${profile.learning_style || 'Unknown'}</p>
+              <p><strong>Learning Style:</strong> <span class="learning-style-badge learning-style-${profile.learning_style || 'unknown'}">${profile.learning_style || 'Unknown'}</span></p>
             </div>
+            <div id="learning-style-details" class="learning-style-details" style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; display: none;">
+              <div id="learning-style-content">Loading detailed analysis...</div>
+            </div>
+            <button id="toggle-learning-style" class="btn-secondary" style="margin-top: 10px; padding: 5px 10px; font-size: 0.8rem;" onclick="toggleLearningStyleDetails()">
+              Show Detailed Analysis
+            </button>
           </div>
           
           <div class="report-section">
@@ -1811,14 +2927,50 @@
         sessionStartTime: null
       };
       
+      // Reset quiz state
+      isQuizActive = false;
+      
       // Reset UI state
       document.getElementById('feedback-section').style.display = 'none';
       document.getElementById('feedback-actions').style.display = 'none';
       document.getElementById('hint-section').style.display = 'none';
-      document.getElementById('timer').style.display = 'block';
+      document.getElementById('timer').style.display = 'none';
+      document.getElementById('answer-section').style.display = 'none';
       
-      // Load new question
-      loadQuestion();
+      // Show start now section
+      document.getElementById('start-now-section').style.display = 'block';
+      
+      // Clear question area
+      document.getElementById('question').textContent = 'Ready for another quiz session?';
+      document.getElementById('difficulty-badge').textContent = '';
+      document.getElementById('answer').value = '';
+    }
+
+    let isEndingSession = false; // Flag to prevent multiple API calls
+
+    // End a quiz session on the backend
+    async function endQuizSession() {
+      if (isEndingSession) return; // Prevent multiple calls
+      
+      try {
+        isEndingSession = true; // Set flag
+        
+        const response = await fetch(`/end-quiz-session?student=${encodeURIComponent(student)}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (response.ok) {
+          // Reload profile to show updated quiz sessions count
+          await loadProfile();
+        }
+      } catch (error) {
+        console.error('Error ending quiz session:', error);
+      } finally {
+        isEndingSession = false; // Reset flag
+      }
     }
 
     // Clear current student data only
@@ -1870,6 +3022,15 @@
 
     // Initialize when page loads
     init();
+
+    // Track quiz session when user leaves/closes browser
+    window.addEventListener('beforeunload', function() {
+      // Only track if there's an active quiz session (questions answered > 0)
+      if (sessionStats.questionsAnswered > 0 && student) {
+        // Use sendBeacon for reliable delivery even when page is closing
+        navigator.sendBeacon('/end-quiz-session?student=' + encodeURIComponent(student));
+      }
+    });
   </script>
 
   <!-- Developer Credits Footer -->

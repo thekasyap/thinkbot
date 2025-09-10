@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import json
 import random
+import re
 from pathlib import Path
+from fractions import Fraction
+from decimal import Decimal, InvalidOperation
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
@@ -40,6 +43,61 @@ def read_root():
     with open("static/index.html", "r") as f:
         return HTMLResponse(f.read())
 
+
+def normalize_answer(answer: str) -> str:
+    """Normalize answer for comparison by removing extra spaces and converting to lowercase."""
+    return answer.strip().lower()
+
+def is_mathematically_equivalent(answer1: str, answer2: str) -> bool:
+    """Check if two answers are mathematically equivalent."""
+    # First try exact string match (case insensitive)
+    if normalize_answer(answer1) == normalize_answer(answer2):
+        return True
+    
+    # Try to convert both to numbers and compare
+    try:
+        # Handle fractions like "1/2", "1/3", etc.
+        if '/' in answer1 and '/' in answer2:
+            frac1 = Fraction(answer1)
+            frac2 = Fraction(answer2)
+            return frac1 == frac2
+        
+        # Handle decimal numbers
+        try:
+            dec1 = Decimal(answer1)
+            dec2 = Decimal(answer2)
+            return dec1 == dec2
+        except (InvalidOperation, ValueError):
+            pass
+        
+        # Try converting one to fraction and one to decimal
+        if '/' in answer1:
+            frac1 = Fraction(answer1)
+            try:
+                dec2 = Decimal(answer2)
+                return float(frac1) == float(dec2)
+            except (InvalidOperation, ValueError):
+                pass
+        elif '/' in answer2:
+            frac2 = Fraction(answer2)
+            try:
+                dec1 = Decimal(answer1)
+                return float(dec1) == float(frac2)
+            except (InvalidOperation, ValueError):
+                pass
+        
+        # Try converting both to float for comparison
+        try:
+            float1 = float(answer1)
+            float2 = float(answer2)
+            return abs(float1 - float2) < 1e-10  # Use small epsilon for floating point comparison
+        except (ValueError, TypeError):
+            pass
+            
+    except (ValueError, TypeError, ZeroDivisionError):
+        pass
+    
+    return False
 
 def select_question(profile: StudentProfile) -> dict:
     """Select a question with sophisticated adaptation logic."""
@@ -103,7 +161,7 @@ def submit_answer(payload: AnswerPayload):
     if not q:
         raise HTTPException(status_code=404, detail="Unknown question")
     
-    correct = payload.answer.strip().lower() == q["answer"].strip().lower()
+    correct = is_mathematically_equivalent(payload.answer, q["answer"])
     
     # Record comprehensive session data
     profile.record_session(
@@ -130,7 +188,7 @@ def submit_answer(payload: AnswerPayload):
         "learning_style": profile.learning_style,
         "next_action": next_action,
         "hint": q.get("hint", ""),
-        "insights": profile.get_learning_insights()
+        "insights": profile.get_learning_insights(),
     }
 
 def generate_personalized_feedback(profile: StudentProfile, question: dict, payload: AnswerPayload, correct: bool) -> str:
@@ -203,7 +261,14 @@ def determine_next_action(profile: StudentProfile, correct: bool) -> str:
 def get_student_analytics(student: str):
     """Get comprehensive learning analytics for a student."""
     profile = StudentProfile.load(student)
-    return profile.get_learning_insights()
+    insights = profile.get_learning_insights()
+    
+    # Add enhanced learning style analysis
+    learning_style_analysis = profile.get_learning_style_analysis()
+    insights['learning_style_analysis'] = learning_style_analysis
+    
+    return insights
+
 
 @app.get("/analytics")
 def get_all_analytics():
@@ -242,4 +307,19 @@ def get_hint(question_id: int):
         "hint": q.get("hint", "No hint available"),
         "topic": q.get("topic", "general")
     }
+
+@app.get("/test-simple")
+def test_simple():
+    """Simple test endpoint."""
+    return {"message": "Simple test works"}
+
+@app.get("/learning-style/{student}")
+def get_learning_style_analysis(student: str):
+    """Get detailed learning style analysis for a student."""
+    try:
+        profile = StudentProfile.load(student)
+        return profile.get_learning_style_analysis()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error analyzing learning style: {str(e)}")
+
 
