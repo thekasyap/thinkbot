@@ -4,3 +4,4 @@ __pycache__/
 
 # Data files
 /data/*.json
+!data/questions.json
