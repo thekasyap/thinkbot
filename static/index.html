@@ -1456,19 +1456,35 @@
     }
 
     // Clear current student data only
-    function clearCurrentStudentData() {
+    async function clearCurrentStudentData() {
       if (confirm(`This will clear data for ${student} only. Are you sure?`)) {
-        // Clear only current student's data
-        if (student) {
-          localStorage.removeItem(`student_${student}`);
-          // Remove from allStudents list
-          allStudents = allStudents.filter(s => s !== student);
-          localStorage.setItem('allStudents', JSON.stringify(allStudents));
-          loadStudents();
+        try {
+          // Clear current student data from server
+          const response = await fetch(`/clear-student/${student}`, {
+            method: 'DELETE'
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to clear server data');
+          }
+          
+          // Clear only current student's data from localStorage
+          if (student) {
+            localStorage.removeItem(`student_${student}`);
+            // Remove from allStudents list
+            allStudents = allStudents.filter(s => s !== student);
+            localStorage.setItem('allStudents', JSON.stringify(allStudents));
+            loadStudents();
+          }
+          student = null;
+          document.getElementById('student-select').value = '';
+          showNewStudentForm();
+          
+          alert('Your data has been successfully cleared!');
+        } catch (error) {
+          console.error('Error clearing data:', error);
+          alert('Error clearing data. Please try again.');
         }
-        student = null;
-        document.getElementById('student-select').value = '';
-        showNewStudentForm();
       }
     }
 

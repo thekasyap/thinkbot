@@ -155,13 +155,20 @@ def submit_answer(payload: AnswerPayload):
         if user_clean == correct_clean:
             return True
         
-        # Check if user answer contains the correct answer (for cases like "Pacific Ocean" vs "Pacific")
-        if correct_clean in user_clean:
-            return True
-            
-        # Check if correct answer contains user answer (for cases like "Pacific" vs "Pacific Ocean")
-        if user_clean in correct_clean:
-            return True
+        # For numerical answers, be more strict - only allow exact matches or specific variations
+        if user_clean.replace('.', '').replace('-', '').isdigit() or correct_clean.replace('.', '').replace('-', '').isdigit():
+            # For numerical answers, only check exact match and specific variations
+            # Don't use substring matching for numbers
+            pass
+        else:
+            # For non-numerical answers, use substring matching
+            # Check if user answer contains the correct answer (for cases like "Pacific Ocean" vs "Pacific")
+            if correct_clean in user_clean:
+                return True
+                
+            # Check if correct answer contains user answer (for cases like "Pacific" vs "Pacific Ocean")
+            if user_clean in correct_clean:
+                return True
             
         # Check for common variations
         variations = {
@@ -341,6 +348,28 @@ def get_all_analytics():
         }
     }
 
+
+@app.delete("/clear-student/{student_name}")
+def clear_student_data(student_name: str):
+    """Clear all data for a specific student."""
+    try:
+        from pathlib import Path
+        import os
+        
+        # Look for student file in the data directory
+        data_dir = Path("data")
+        student_file = data_dir / f"student_{student_name}.json"
+        
+        if student_file.exists():
+            # Delete the student profile file
+            student_file.unlink()
+            return {"message": f"Successfully cleared data for student: {student_name}"}
+        else:
+            return {"message": f"No data found for student: {student_name}"}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error clearing student data: {str(e)}")
+
 @app.get("/hint/{question_id}")
 def get_hint(question_id: int):
     """Get a hint for a specific question."""
@@ -392,9 +421,9 @@ def generate_new_questions(topic: str = None, count: int = 5):
             
             # Add unique IDs and save to questions file
             new_questions = []
+            max_id = max([q.get('id', 0) for level_questions in QUESTIONS.values() for q in level_questions], default=0)
             for i, q in enumerate(questions):
-                new_id = max(QUESTION_INDEX.keys()) + i + 1 if QUESTION_INDEX else 1
-                q["id"] = new_id
+                q["id"] = max_id + i + 1
                 new_questions.append(q)
             
             # Update the questions file
@@ -417,6 +446,12 @@ def generate_new_questions(topic: str = None, count: int = 5):
                 "questions": new_questions,
                 "topic": topic or "general"
             }
+            
+        except json.JSONDecodeError:
+            return {"error": "Failed to parse LLM response as JSON"}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating questions: {str(e)}")
 
 
 def generate_new_questions_auto(topic: str, level: str, count: int = 10):
@@ -446,7 +481,7 @@ def generate_new_questions_auto(topic: str, level: str, count: int = 10):
             new_questions = json.loads(response)
             
             # Add unique IDs to the questions
-            max_id = max([q['id'] for level_questions in QUESTIONS.values() for q in level_questions], default=0)
+            max_id = max([q.get('id', 0) for level_questions in QUESTIONS.values() for q in level_questions], default=0)
             for i, question in enumerate(new_questions):
                 question['id'] = max_id + i + 1
             
