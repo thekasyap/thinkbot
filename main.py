@@ -1,127 +1,67 @@
-"""ThinkBot: A simple adaptive tutor using a local LLM and JSON storage.
+"""Core utilities for the ThinkBot demo.
 
-This script provides two commands:
-
-* ``ingest <pdf>`` - load a PDF into the local knowledge base.
-* ``chat <student_name>`` - start an interactive tutoring session.
-
-The tutor uses a locally hosted model that exposes an OpenAI compatible
-chat-completions API (for example LM Studio or Ollama). Update the
-``API_URL`` and ``MODEL`` constants if your setup differs.
+Provides a minimal Gemini client and a small JSON-based ``StudentProfile`` to
+keep resource usage low for free-tier hosting such as Vercel's hobby plan.
 """
 
 from __future__ import annotations
 
-import argparse
 import json
-import random
-import sys
-from dataclasses import dataclass, asdict
+import os
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import List
 
-import numpy as np
 import requests
-from pypdf import PdfReader
-from sentence_transformers import SentenceTransformer
 
-# ---------------------------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------------------------
+# Directory where student progress JSON files are stored
 DATA_DIR = Path("data")
-KNOWLEDGE_FILE = DATA_DIR / "knowledge.json"
-EMBED_MODEL = "all-MiniLM-L6-v2"
-API_URL = "http://localhost:11434/v1/chat/completions"  # LM Studio/Ollama
-MODEL = "deepseek-r1:latest"  # change if the local model name differs
 
+# Gemini configuration
+GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# ---------------------------------------------------------------------------
-# Utility functions
-# ---------------------------------------------------------------------------
-
-def ensure_data_dir() -> None:
-    """Ensure the data directory exists."""
-    DATA_DIR.mkdir(exist_ok=True)
-
-
-def load_json(path: Path, default):
-    if path.exists():
-        with path.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
-    return default
-
-
-def save_json(path: Path, data) -> None:
-    with path.open("w", encoding="utf-8") as fh:
-        json.dump(data, fh, indent=2)
-
-
-# ---------------------------------------------------------------------------
-# Knowledge base (very small JSON based vector store)
-# ---------------------------------------------------------------------------
-
-def load_knowledge() -> List[dict]:
-    data = load_json(KNOWLEDGE_FILE, {"chunks": []})
-    return data["chunks"]
-
-
-def save_knowledge(chunks: List[dict]) -> None:
-    save_json(KNOWLEDGE_FILE, {"chunks": chunks})
-
-
-def embed_texts(texts: List[str]) -> List[List[float]]:
-    model = SentenceTransformer(EMBED_MODEL)
-    vectors = model.encode(texts, show_progress_bar=False)
-    return [vec.tolist() for vec in vectors]
-
-
-def ingest_pdf(pdf_path: str) -> None:
-    """Parse a PDF, chunk text and store embeddings."""
-    ensure_data_dir()
-    reader = PdfReader(pdf_path)
-    full_text = "\n".join(page.extract_text() or "" for page in reader.pages)
-    words = full_text.split()
-    chunk_size = 200  # words
-    chunks = [" ".join(words[i : i + chunk_size]) for i in range(0, len(words), chunk_size) if words[i : i + chunk_size]]
-    embeddings = embed_texts(chunks)
-    kb_chunks = load_knowledge()
-    for text, emb in zip(chunks, embeddings):
-        kb_chunks.append({"text": text, "embedding": emb})
-    save_knowledge(kb_chunks)
-    print(f"Ingested {len(chunks)} chunks into the knowledge base.")
-
-
-def retrieve(query: str, k: int = 3) -> List[str]:
-    chunks = load_knowledge()
-    if not chunks:
-        return []
-    model = SentenceTransformer(EMBED_MODEL)
-    q_emb = model.encode([query])[0]
-    # compute cosine similarity
-    chunk_embs = np.array([c["embedding"] for c in chunks])
-    scores = chunk_embs @ q_emb / (np.linalg.norm(chunk_embs, axis=1) * np.linalg.norm(q_emb) + 1e-9)
-    top_indices = scores.argsort()[-k:][::-1]
-    return [chunks[i]["text"] for i in top_indices]
-
-
-# ---------------------------------------------------------------------------
-# LLM client
-# ---------------------------------------------------------------------------
 
 def call_llm(messages: List[dict]) -> str:
-    payload = {"model": MODEL, "messages": messages}
+    """Call Gemini via its REST API and return the text response.
+
+    ``messages`` uses the familiar ``{"role": ..., "content": ...}`` format.
+    To conserve free-tier quotas we disable the "thinking" feature by setting
+    the ``thinkingBudget`` to zero.
+    """
+
+    if not GEMINI_API_KEY:
+        return "[Gemini API key not set]"
+
+    url = (
+        f"https://generativelanguage.googleapis.com/v1beta/models/"
+        f"{GEMINI_MODEL}:generateContent"
+    )
+    payload = {
+        "contents": [
+            {"role": m["role"], "parts": [{"text": m["content"]}]} for m in messages
+        ],
+        "generationConfig": {"thinkingConfig": {"thinkingBudget": 0}},
+    }
+    params = {"key": GEMINI_API_KEY}
     try:
-        resp = requests.post(API_URL, json=payload, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-        return data["choices"][0]["message"]["content"].strip()
-    except Exception as exc:  # pragma: no cover - networking
-        return f"[Error contacting LLM: {exc}]"
+        r = requests.post(url, params=params, json=payload, timeout=15)
+        r.raise_for_status()
+        data = r.json()
+        return (
+            data.get("candidates", [{}])[0]
+            .get("content", {})
+            .get("parts", [{}])[0]
+            .get("text", "")
+        )
+    except Exception as exc:  # pragma: no cover - network errors
+        return f"[Gemini request failed: {exc}]"
 
 
 # ---------------------------------------------------------------------------
-# Student profile handling
+# Student profile storage
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class StudentProfile:
@@ -138,14 +78,17 @@ class StudentProfile:
         return DATA_DIR / f"student_{self.name}.json"
 
     def save(self) -> None:
-        ensure_data_dir()
-        save_json(self.path, asdict(self))
+        DATA_DIR.mkdir(exist_ok=True)
+        with self.path.open("w", encoding="utf-8") as fh:
+            json.dump(asdict(self), fh)
 
     @classmethod
     def load(cls, name: str) -> "StudentProfile":
-        ensure_data_dir()
-        data = load_json(DATA_DIR / f"student_{name}.json", None)
-        if data:
+        DATA_DIR.mkdir(exist_ok=True)
+        path = DATA_DIR / f"student_{name}.json"
+        if path.exists():
+            with path.open("r", encoding="utf-8") as fh:
+                data = json.load(fh)
             return cls(**data)
         return cls(name=name)
 
@@ -156,96 +99,6 @@ class StudentProfile:
         self.save()
 
 
-# ---------------------------------------------------------------------------
-# Chat logic
-# ---------------------------------------------------------------------------
-
-SYSTEM_PROMPT = (
-    "You are ThinkBot, an adaptive teaching assistant."
-    " Use the provided context to answer questions."
-    " Speak clearly and educationally."
-)
-
-
-def generate_quiz(context: str) -> str:
-    prompt = f"Create a single short quiz question based on: {context}".strip()
-    return call_llm([{"role": "user", "content": prompt}])
-
-
-def grade_answer(question: str, answer: str) -> tuple[bool, str]:
-    prompt = (
-        f"Question: {question}\n"
-        f"Student answer: {answer}\n"
-        "Respond with 'correct' or 'incorrect' followed by a short explanation."
-    )
-    result = call_llm([{"role": "user", "content": prompt}])
-    is_correct = result.lower().startswith("correct")
-    return is_correct, result
-
-
-def chat(student_name: str) -> None:
-    profile = StudentProfile.load(student_name)
-    print(f"Starting session for {student_name}. Type 'exit' to end.")
-    turns = 0
-    while True:
-        user_input = input("You: ")
-        if user_input.strip().lower() == "exit":
-            break
-        turns += 1
-        context = "\n".join(retrieve(user_input))
-        adapt = "" if profile.accuracy >= 0.5 else " Use simple language and more examples."
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT + adapt + f"\nContext:\n{context}"},
-            {"role": "user", "content": user_input},
-        ]
-        reply = call_llm(messages)
-        print(f"Tutor: {reply}")
-
-        # Random quiz every 3 turns on average
-        if random.random() < 1 / 3:
-            quiz_context = context or "general knowledge from the lesson"
-            question = generate_quiz(quiz_context)
-            print(f"\nQuiz: {question}")
-            answer = input("Your answer: ")
-            correct, feedback = grade_answer(question, answer)
-            profile.record(correct)
-            print(f"Tutor: {feedback}\n")
-
-    if profile.quizzes:
-        print(
-            f"Session complete. Score: {profile.correct}/{profile.quizzes}"
-            f" ({profile.accuracy*100:.1f}% correct)."
-        )
-    profile.save()
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
-
-def main(argv: List[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="ThinkBot adaptive tutor")
-    sub = parser.add_subparsers(dest="command")
-
-    p_ingest = sub.add_parser("ingest", help="Add a PDF to the knowledge base")
-    p_ingest.add_argument("pdf", help="Path to PDF file")
-
-    p_chat = sub.add_parser("chat", help="Start a tutoring session")
-    p_chat.add_argument("student", help="Student name")
-
-    args = parser.parse_args(argv)
-
-    if args.command == "ingest":
-        ingest_pdf(args.pdf)
-    elif args.command == "chat":
-        chat(args.student)
-    else:
-        parser.print_help()
-        return 1
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-
+if __name__ == "__main__":  # pragma: no cover
+    # small manual test when executed directly
+    print(call_llm([{"role": "user", "content": "Hello"}]))
