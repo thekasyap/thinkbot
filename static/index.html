@@ -1283,7 +1283,7 @@
     }
 
     // Skip question
-    function skipQuestion() {
+    async function skipQuestion() {
       if (confirm('Are you sure you want to skip this question?')) {
         // Stop current timer
         stopTimer();
@@ -1293,13 +1293,38 @@
         sessionStats.skippedQuestions++;
         sessionStats.totalResponseTime += (Date.now() - startTime) / 1000;
         
+        // Submit skip to backend to track it properly
+        try {
+          const response = await fetch('/answer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              student: student,
+              question_id: currentQuestion.id,
+              answer: 'skip',
+              response_time: (Date.now() - startTime) / 1000,
+              answer_changes: answerChanges,
+              hints_used: hintsUsed
+            })
+          });
+          
+          if (response.ok) {
+            // Load analytics to update the display
+            await loadAnalytics();
+          }
+        } catch (error) {
+          console.error('Error submitting skip:', error);
+        }
+        
         // Reset tracking variables
         answerChanges = 0;
         hintsUsed = 0;
         
         // Load new question
-      loadQuestion();
-    }
+        loadQuestion();
+      }
     }
 
     // Timer functions
@@ -1661,9 +1686,9 @@
         const profile = await res.json();
         
         // Calculate session-specific stats
-        const totalQuestions = sessionStats.questionsAnswered;
-        const correctAnswers = sessionStats.correctAnswers;
-        const skippedQuestions = sessionStats.skippedQuestions;
+        const totalQuestions = sessionStats.questionsAnswered || 0;
+        const correctAnswers = sessionStats.correctAnswers || 0;
+        const skippedQuestions = sessionStats.skippedQuestions || 0;
         const accuracyPct = totalQuestions > 0 ? (correctAnswers / totalQuestions * 100) : 0;
         const avgResponseTime = totalQuestions > 0 ? (sessionStats.totalResponseTime / totalQuestions) : 0;
         const sessionDuration = sessionStats.sessionStartTime ? 
@@ -1781,6 +1806,7 @@
       sessionStats = {
         questionsAnswered: 0,
         correctAnswers: 0,
+        skippedQuestions: 0,
         totalResponseTime: 0,
         sessionStartTime: null
       };
