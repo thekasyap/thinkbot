@@ -1,38 +1,1493 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>ThinkBot Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThinkBot - Adaptive Learning Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .student-management {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .student-selector, .topic-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
+      border-radius: 25px;
+      backdrop-filter: blur(10px);
+    }
+
+    .student-selector label, .topic-selector label {
+      color: white;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .student-selector select, .topic-selector select {
+      background: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      min-width: 120px;
+    }
+
+    .student-selector button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .student-selector button:hover {
+      background: #45a049;
+    }
+
+    .analytics-section {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .analytics-section h4 {
+      color: #4CAF50;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .student-comparison-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      border-bottom: none;
+    }
+
+    .student-comparison-item:last-child {
+      border-bottom: none;
+    }
+
+    .student-name {
+      font-weight: 500;
+      color: #2c3e50;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+
+    .student-stats {
+      display: flex;
+      gap: 10px;
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      color: #ccc;
+    }
+
+    .stat-value {
+      color: #4CAF50;
+      font-weight: 500;
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: center;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .analysis-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .analysis-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: #333;
+    }
+
+    .analysis-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .report-section {
+      margin-bottom: 25px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #4CAF50;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .profile-info {
+      margin-top: 15px;
+    }
+
+    .profile-info p {
+      margin-bottom: 10px;
+    }
+
+    .engagement-badge, .pace-badge {
+      padding: 4px 8px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .engagement-badge.highly_engaged { background: #4CAF50; color: white; }
+    .engagement-badge.engaged { background: #2196F3; color: white; }
+    .engagement-badge.moderate { background: #FF9800; color: white; }
+    .engagement-badge.struggling { background: #f44336; color: white; }
+    .engagement-badge.disengaged { background: #9E9E9E; color: white; }
+
+    .pace-badge.fast { background: #4CAF50; color: white; }
+    .pace-badge.medium { background: #2196F3; color: white; }
+    .pace-badge.slow { background: #FF9800; color: white; }
+
+    .recommendations {
+      margin-top: 15px;
+    }
+
+    .recommendations p {
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      border-radius: 4px;
+    }
+
+    .report-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .quiz-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .question-section {
+      margin-bottom: 30px;
+    }
+
+    .question-text {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    .difficulty-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .difficulty-easy { background: #e8f5e8; color: #27ae60; }
+    .difficulty-medium { background: #fff3cd; color: #f39c12; }
+    .difficulty-hard { background: #f8d7da; color: #e74c3c; }
+
+    .answer-section {
+      margin-bottom: 20px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e1e8ed;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #6c757d;
+      border: 2px solid #e9ecef;
+    }
+
+    .btn-secondary:hover {
+      background: #e9ecef;
+      transform: translateY(-1px);
+    }
+
+    .btn-hint {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .btn-hint:hover {
+      background: #138496;
+      transform: translateY(-1px);
+    }
+
+    .feedback-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 4px solid #667eea;
+    }
+
+    .feedback-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #2c3e50;
+    }
+
+    .correct-answer {
+      color: #27ae60;
+      font-weight: 600;
+    }
+
+    .incorrect-answer {
+      color: #e74c3c;
+      font-weight: 600;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .profile-card, .analytics-card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .engagement-badge {
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .engagement-highly_engaged { background: #d4edda; color: #155724; }
+    .engagement-engaged { background: #d1ecf1; color: #0c5460; }
+    .engagement-moderate { background: #fff3cd; color: #856404; }
+    .engagement-struggling { background: #f8d7da; color: #721c24; }
+    .engagement-learning { background: #e2e3e5; color: #383d41; }
+
+    .learning-style {
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: capitalize;
+      background: #e9ecef;
+      color: #495057;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+    }
+
+    .timer {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .timer-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #856404;
+    }
+
+    .hint-section {
+      background: #d1ecf1;
+      border: 2px solid #17a2b8;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .hint-text {
+      color: #0c5460;
+      font-weight: 500;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .next-action {
+      background: #d4edda;
+      border: 2px solid #28a745;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .next-action-text {
+      color: #155724;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .quiz-card {
+        padding: 20px;
+      }
+      
+      .student-comparison-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .student-stats {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>ThinkBot Adaptive Quiz</h1>
-  <div id="question"></div>
-  <input id="answer" placeholder="Your answer" />
-  <button onclick="submitAnswer()">Submit</button>
-  <pre id="feedback"></pre>
+  <div class="container">
+    <div class="header">
+      <h1>🧠 ThinkBot</h1>
+      <p>AI-Powered Adaptive Learning Platform</p>
+      <div class="student-management">
+        <div class="student-selector">
+          <label for="student-select">Student:</label>
+          <select id="student-select" onchange="changeStudent()">
+            <option value="">Select Student</option>
+          </select>
+          <button id="new-student-btn" onclick="showNewStudentForm()">+ New Student</button>
+          <button id="clear-data-btn" onclick="clearCurrentStudentData()" style="background: #dc3545; margin-left: 10px;">🗑️ Clear My Data</button>
+        </div>
+        <div class="topic-selector">
+          <label for="topic-select">Topic:</label>
+          <select id="topic-select" onchange="changeTopic()">
+            <option value="">All Topics</option>
+            <option value="arithmetic">Arithmetic</option>
+            <option value="geometry">Geometry</option>
+            <option value="algebra">Algebra</option>
+            <option value="calculus">Calculus</option>
+            <option value="fractions">Fractions</option>
+            <option value="exponents">Exponents</option>
+            <option value="colors">Colors</option>
+            <option value="geography">Geography</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="quiz-card">
+        <div class="question-section">
+          <div id="difficulty-badge" class="difficulty-badge"></div>
+          <div id="question" class="question-text">Loading question...</div>
+        </div>
+
+        <div class="timer" id="timer" style="display: none;">
+          <div class="timer-text">Time: <span id="timer-display">0</span>s</div>
+        </div>
+
+        <div class="answer-section">
+          <input type="text" id="answer" class="answer-input" placeholder="Enter your answer..." />
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="submitAnswer()">Submit Answer</button>
+            <button class="btn btn-hint" onclick="getHint()">Get Hint</button>
+            <button class="btn btn-secondary" onclick="skipQuestion()">Skip</button>
+            <button class="btn btn-danger" onclick="endQuiz()">End Quiz</button>
+          </div>
+        </div>
+
+        <div class="hint-section" id="hint-section">
+          <div class="hint-text" id="hint-text"></div>
+        </div>
+
+        <div class="feedback-section" id="feedback-section" style="display: none;">
+          <div class="feedback-text" id="feedback-text"></div>
+          <div class="next-action" id="next-action" style="display: none;">
+            <div class="next-action-text" id="next-action-text"></div>
+          </div>
+          <div class="feedback-actions" id="feedback-actions" style="display: none;">
+            <button id="next-question-btn" onclick="loadNextQuestion()" class="btn btn-primary">
+              Next Question →
+            </button>
+            <button id="analyze-btn" onclick="showAnalysis()" class="btn btn-secondary">
+              📊 Analyze Answer
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="profile-card">
+          <div class="card-title">👤 Student Profile</div>
+          <div id="profile-content">
+            <div class="loading">
+              <div class="spinner"></div>
+              <div>Loading profile...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="card-title" onclick="toggleAnalytics()" style="cursor: pointer;">
+            👥 All Students Analytics <span id="analytics-toggle">▼</span>
+          </div>
+          <div id="analytics-content" style="display: none;">
+            <div class="loading">
+              <div class="spinner"></div>
+              <div>Loading analytics...</div>
+            </div>
+          </div>
+          <div id="detailed-analytics" style="display: none;">
+            <div class="analytics-section">
+              <h4>📈 Class Overview</h4>
+              <div id="class-overview"></div>
+            </div>
+            <div class="analytics-section">
+              <h4>👥 Student Comparison</h4>
+              <div id="student-comparison"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analysis Modal -->
+  <div id="analysis-modal" class="analysis-modal">
+    <div class="analysis-content">
+      <div class="analysis-header">
+        <h3>📊 Answer Analysis</h3>
+        <button class="close-btn" onclick="closeAnalysis()">✕</button>
+      </div>
+      <div id="analysis-details"></div>
+    </div>
+  </div>
 
   <script>
-    async function loadQuestion() {
-      const student = localStorage.getItem('student') || prompt('Your name?');
-      localStorage.setItem('student', student);
-      const res = await fetch(`/question?student=${student}`);
-      window.currentQuestion = await res.json();
-      document.getElementById('question').textContent = window.currentQuestion.question;
+    let currentQuestion = null;
+    let startTime = null;
+    let timerInterval = null;
+    let answerChanges = 0;
+    let hintsUsed = 0;
+    let student = null;
+    let selectedTopic = '';
+    let allStudents = [];
+    let analyticsExpanded = false;
+    
+    // Session tracking
+    let sessionStats = {
+        questionsAnswered: 0,
+        correctAnswers: 0,
+        skippedQuestions: 0,
+        totalResponseTime: 0,
+        sessionStartTime: null
+    };
+    
+    // Report modal state
+    let isReportOpen = false;
+
+    // Initialize the application
+    async function init() {
+      await loadStudents();
+      student = localStorage.getItem('student');
+      if (student) {
+        document.getElementById('student-select').value = student;
+      } else {
+        showNewStudentForm();
+      }
+      
+      await loadQuestion();
+      await loadProfile();
+      await loadAnalytics();
     }
+
+    // Load a new question
+    async function loadQuestion() {
+      try {
+        showLoading();
+        const url = selectedTopic ? 
+          `/question?student=${student}&topic=${selectedTopic}` : 
+          `/question?student=${student}`;
+        const res = await fetch(url);
+        currentQuestion = await res.json();
+        
+        document.getElementById('question').textContent = currentQuestion.question;
+        
+        // Update difficulty badge
+        const badge = document.getElementById('difficulty-badge');
+        badge.textContent = currentQuestion.difficulty;
+        badge.className = `difficulty-badge difficulty-${currentQuestion.difficulty}`;
+        
+        // Reset UI
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback-section').style.display = 'none';
+        document.getElementById('hint-section').style.display = 'none';
+        document.getElementById('timer').style.display = 'block';
+        
+        // Ensure submit button is restored for new question
+        const submitBtn = document.querySelector('button[onclick="submitAnswer()"]');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.style.display = '';
+          submitBtn.textContent = 'Submit Answer';
+        }
+        
+        // Start timer
+        startTimer();
+        
+        // Reset tracking variables
+        answerChanges = 0;
+        hintsUsed = 0;
+        startTime = Date.now();
+        
+        // Initialize session stats if this is the first question
+        if (sessionStats.sessionStartTime === null) {
+          sessionStats.sessionStartTime = Date.now();
+        }
+        
+        // Track answer changes
+        const answerInput = document.getElementById('answer');
+        let lastValue = '';
+        
+        // Remove any existing event listeners by cloning the element
+        const newAnswerInput = answerInput.cloneNode(true);
+        answerInput.parentNode.replaceChild(newAnswerInput, answerInput);
+        
+        // Add fresh event listener
+        newAnswerInput.addEventListener('input', () => {
+          if (newAnswerInput.value !== lastValue) {
+            answerChanges++;
+            lastValue = newAnswerInput.value;
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error loading question:', error);
+        alert('Error loading question. Please try again.');
+      }
+    }
+
+    // Submit answer
     async function submitAnswer() {
-      const student = localStorage.getItem('student');
-      const answer = document.getElementById('answer').value;
+      if (!currentQuestion) return;
+      
+      const answer = document.getElementById('answer').value.trim();
+      if (!answer) {
+        alert('Please enter an answer.');
+        return;
+      }
+      
+      // Disable submit button and show loading state
+      const submitBtn = document.querySelector('button[onclick="submitAnswer()"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
+      
+      const responseTime = (Date.now() - startTime) / 1000;
+      stopTimer();
+      
+      try {
       const res = await fetch('/answer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student, question_id: window.currentQuestion.id, answer })
+          body: JSON.stringify({
+            student,
+            question_id: currentQuestion.id,
+            answer,
+            response_time: responseTime,
+            answer_changes: answerChanges,
+            hints_used: hintsUsed
+          })
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        
+        // Update session stats
+        sessionStats.questionsAnswered++;
+        if (data.correct) {
+          sessionStats.correctAnswers++;
+        }
+        sessionStats.totalResponseTime += responseTime;
+        
+        showFeedback(data);
+        
+        // Update profile and analytics immediately
+        await loadProfile();
+        await loadAnalytics();
+        
+        // Force refresh detailed analytics if expanded
+        if (analyticsExpanded) {
+            await loadDetailedAnalytics();
+        }
+        
+      } catch (error) {
+        console.error('Error submitting answer:', error);
+        alert('Error submitting answer. Please try again.');
+      } finally {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    }
+
+    // Show feedback
+    function showFeedback(data) {
+      const feedbackSection = document.getElementById('feedback-section');
+      const feedbackText = document.getElementById('feedback-text');
+      const nextAction = document.getElementById('next-action');
+      const nextActionText = document.getElementById('next-action-text');
+      const feedbackActions = document.getElementById('feedback-actions');
+      
+      // Hide/disable submit button during feedback
+      const submitBtn = document.querySelector('button[onclick="submitAnswer()"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.display = 'none';
+      }
+      
+      feedbackSection.style.display = 'block';
+      
+      const correctClass = data.correct ? 'correct-answer' : 'incorrect-answer';
+      const correctText = data.correct ? '✅ Correct!' : '❌ Incorrect';
+      
+      feedbackText.innerHTML = `
+        <div class="${correctClass}">${correctText}</div>
+        <div style="margin-top: 15px;">${data.feedback}</div>
+      `;
+      
+      // Show next action
+      if (data.next_action) {
+        nextAction.style.display = 'block';
+        nextActionText.textContent = getNextActionText(data.next_action);
+      }
+      
+      // Show action buttons for manual progression
+      feedbackActions.style.display = 'flex';
+      
+      // Auto-advance after 5 seconds only for correct answers (more time to see analytics)
+      if (data.correct) {
+        setTimeout(() => {
+          loadNextQuestion();
+        }, 5000);
+      }
+      // For wrong answers, wait for manual progression
+    }
+
+    // Get hint
+    async function getHint() {
+      if (!currentQuestion) return;
+      
+      try {
+        const res = await fetch(`/hint/${currentQuestion.id}`);
+        const data = await res.json();
+        
+        const hintSection = document.getElementById('hint-section');
+        const hintText = document.getElementById('hint-text');
+        
+        hintText.textContent = data.hint;
+        hintSection.style.display = 'block';
+        hintsUsed++;
+        
+      } catch (error) {
+        console.error('Error getting hint:', error);
+        alert('Error getting hint. Please try again.');
+      }
+    }
+
+    // Skip question
+    function skipQuestion() {
+      if (confirm('Are you sure you want to skip this question?')) {
+        // Stop current timer
+        stopTimer();
+        
+        // Update session stats
+        sessionStats.questionsAnswered++;
+        sessionStats.skippedQuestions++;
+        sessionStats.totalResponseTime += (Date.now() - startTime) / 1000;
+        
+        // Reset tracking variables
+        answerChanges = 0;
+        hintsUsed = 0;
+        
+        // Load new question
+        loadQuestion();
+      }
+    }
+
+    // Timer functions
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000;
+        document.getElementById('timer-display').textContent = Math.floor(elapsed);
+      }, 100);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    // Load student profile
+    async function loadProfile() {
+      try {
+        const res = await fetch(`/analytics/${student}`);
+        const profile = await res.json();
+        
+        document.getElementById('profile-content').innerHTML = `
+          <div class="stat-item">
+            <span class="stat-label">Name:</span>
+            <span class="stat-value">${profile.student_name}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Quizzes:</span>
+            <span class="stat-value">${profile.total_quizzes}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Accuracy:</span>
+            <span class="stat-value">${profile.accuracy}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${profile.accuracy}%"></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Learning Style:</span>
+            <span class="stat-value learning-style">${profile.learning_style}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Engagement:</span>
+            <span class="stat-value engagement-badge engagement-${profile.engagement_level}">${profile.engagement_level.replace('_', ' ')}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Pace:</span>
+            <span class="stat-value">${profile.learning_pace}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Response Time:</span>
+            <span class="stat-value">${profile.average_response_time}s</span>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    // Load analytics
+    async function loadAnalytics() {
+      try {
+        const res = await fetch('/analytics');
+        const analytics = await res.json();
+        
+        document.getElementById('analytics-content').innerHTML = `
+          <div class="stat-item">
+            <span class="stat-label">Total Students:</span>
+            <span class="stat-value">${analytics.total_students || 0}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">High Performers:</span>
+            <span class="stat-value">${analytics.summary?.high_performers || 0}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Need Attention:</span>
+            <span class="stat-value">${analytics.summary?.struggling_students || 0}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Avg Accuracy:</span>
+            <span class="stat-value">${(analytics.summary?.average_accuracy || 0).toFixed(1)}%</span>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+        document.getElementById('analytics-content').innerHTML = `
+          <div class="stat-item">
+            <span class="stat-label">Error loading analytics</span>
+          </div>
+        `;
+      }
+    }
+
+    // Helper functions
+    function showLoading() {
+      document.getElementById('question').textContent = 'Loading question...';
+      document.getElementById('difficulty-badge').textContent = '';
+    }
+
+    function getNextActionText(action) {
+      const actions = {
+        'encouraged_practice': 'Keep practicing! You\'re doing great!',
+        'guided_learning': 'Let\'s work through this step by step.',
+        'challenge_mode': 'Ready for a challenge? Let\'s level up!',
+        'focused_review': 'Let\'s review this concept together.',
+        'accelerated_learning': 'You\'re ready for advanced topics!',
+        'reinforcement': 'Let\'s reinforce this concept with more practice.',
+        'continue_learning': 'Great job! Let\'s keep learning!'
+      };
+      return actions[action] || 'Keep learning!';
+    }
+
+    // Load all students from localStorage
+    async function loadStudents() {
+      const students = JSON.parse(localStorage.getItem('allStudents') || '[]');
+      allStudents = students;
+      const select = document.getElementById('student-select');
+      select.innerHTML = '<option value="">Select Student</option>';
+      students.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
       });
-      const data = await res.json();
-      document.getElementById('feedback').textContent = `Correct: ${data.correct}\n${data.feedback}`;
-      document.getElementById('answer').value = '';
+    }
+
+    // Change student
+    async function changeStudent() {
+      const newStudent = document.getElementById('student-select').value;
+      if (newStudent && newStudent !== student) {
+        // Stop current timer
+        stopTimer();
+        
+        student = newStudent;
+        localStorage.setItem('student', student);
+        
+        // Reset session stats for new student
+        sessionStats = {
+          questionsAnswered: 0,
+          correctAnswers: 0,
+          skippedQuestions: 0,
+          totalResponseTime: 0,
+          sessionStartTime: null
+        };
+        
+        // Reset UI state
+        document.getElementById('feedback-section').style.display = 'none';
+        document.getElementById('feedback-actions').style.display = 'none';
+        document.getElementById('hint-section').style.display = 'none';
+        document.getElementById('timer').style.display = 'block';
+        
+        await loadQuestion();
+        await loadProfile();
+        await loadAnalytics();
+      }
+    }
+
+    // Show new student form
+    function showNewStudentForm() {
+      const name = prompt('Enter your name:');
+      if (name && name.trim()) {
+        const trimmedName = name.trim();
+        if (!allStudents.includes(trimmedName)) {
+          allStudents.push(trimmedName);
+          localStorage.setItem('allStudents', JSON.stringify(allStudents));
+          loadStudents();
+        }
+        student = trimmedName;
+        localStorage.setItem('student', student);
+        document.getElementById('student-select').value = student;
+      loadQuestion();
+        loadProfile();
+        loadAnalytics();
+      }
+    }
+
+    // Change topic
+    function changeTopic() {
+      selectedTopic = document.getElementById('topic-select').value;
+      if (student) {
+    loadQuestion();
+      }
+    }
+
+    // Toggle analytics expansion
+    function toggleAnalytics() {
+      analyticsExpanded = !analyticsExpanded;
+      const content = document.getElementById('analytics-content');
+      const detailed = document.getElementById('detailed-analytics');
+      const toggle = document.getElementById('analytics-toggle');
+      
+      if (analyticsExpanded) {
+        content.style.display = 'block';
+        detailed.style.display = 'block';
+        toggle.textContent = '▲';
+        loadDetailedAnalytics();
+      } else {
+        content.style.display = 'none';
+        detailed.style.display = 'none';
+        toggle.textContent = '▼';
+      }
+    }
+
+    // Load detailed analytics with student comparison
+    async function loadDetailedAnalytics() {
+      try {
+        const res = await fetch('/analytics');
+        const analytics = await res.json();
+        
+        // Class overview
+        document.getElementById('class-overview').innerHTML = `
+          <div class="stat-row">
+            <span class="stat-label">Total Students:</span>
+            <span class="stat-value">${analytics.total_students}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">High Performers:</span>
+            <span class="stat-value">${analytics.summary.high_performers}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Struggling Students:</span>
+            <span class="stat-value">${analytics.summary.struggling_students}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Average Accuracy:</span>
+            <span class="stat-value">${analytics.summary.average_accuracy.toFixed(1)}%</span>
+          </div>
+        `;
+
+        // Student comparison
+        const comparisonHtml = analytics.students.map(s => `
+          <div class="student-comparison-item">
+            <span class="student-name">${s.name || 'Unknown Student'}</span>
+            <div class="student-stats">
+              <span class="stat-item">Accuracy: <span class="stat-value">${(s.accuracy || 0).toFixed(1)}%</span></span>
+              <span class="stat-item">Questions: <span class="stat-value">${s.total_quizzes || 0}</span></span>
+              <span class="stat-item">Level: <span class="stat-value">${s.learning_pace || 'Unknown'}</span></span>
+              <span class="stat-item">Engagement: <span class="stat-value">${s.engagement_level || 'Unknown'}</span></span>
+            </div>
+          </div>
+        `).join('');
+        
+        document.getElementById('student-comparison').innerHTML = comparisonHtml;
+      } catch (error) {
+        console.error('Error loading detailed analytics:', error);
+      }
+    }
+
+    // Load next question manually
+    async function loadNextQuestion() {
+      document.getElementById('feedback-section').style.display = 'none';
+      document.getElementById('feedback-actions').style.display = 'none';
+      // Restore submit button visibility for the next question
+      const submitBtn = document.querySelector('button[onclick="submitAnswer()"]');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.style.display = '';
+        submitBtn.textContent = 'Submit Answer';
+      }
+      await loadQuestion();
+    }
+
+    // Show analysis modal
+    function showAnalysis() {
+      const modal = document.getElementById('analysis-modal');
+      const details = document.getElementById('analysis-details');
+      
+      // Mark that this is not the end-quiz report
+      isReportOpen = false;
+      
+      details.innerHTML = `
+        <h4>Question Analysis</h4>
+        <p><strong>Question:</strong> ${currentQuestion.question}</p>
+        <p><strong>Your Answer:</strong> ${document.getElementById('answer').value}</p>
+        <p><strong>Correct Answer:</strong> ${currentQuestion.answer}</p>
+        <p><strong>Explanation:</strong> ${currentQuestion.explanation || 'No explanation available.'}</p>
+        <p><strong>Response Time:</strong> ${((Date.now() - startTime) / 1000).toFixed(1)}s</p>
+        <p><strong>Answer Changes:</strong> ${answerChanges}</p>
+        <p><strong>Hints Used:</strong> ${hintsUsed}</p>
+      `;
+      
+      modal.style.display = 'flex';
+    }
+
+    // Close analysis modal
+    function closeAnalysis() {
+      document.getElementById('analysis-modal').style.display = 'none';
+      // Stop any running timer
+      stopTimer();
+      // If we closed the end-quiz report, reset the session stats
+      if (isReportOpen) {
+        sessionStats = {
+          questionsAnswered: 0,
+          correctAnswers: 0,
+          skippedQuestions: 0,
+          totalResponseTime: 0,
+          sessionStartTime: null
+        };
+        isReportOpen = false;
+      }
+    }
+
+    // End quiz and show comprehensive report
+    async function endQuiz() {
+      if (confirm('Are you sure you want to end the quiz? You will see a comprehensive report.')) {
+        // Stop timer
+        stopTimer();
+        
+        // Hide timer display
+        document.getElementById('timer').style.display = 'none';
+        
+        // Reset UI state
+        document.getElementById('feedback-section').style.display = 'none';
+        document.getElementById('feedback-actions').style.display = 'none';
+        document.getElementById('hint-section').style.display = 'none';
+        
+        // Load final analytics
+        await loadProfile();
+        await loadAnalytics();
+        
+        // Show comprehensive report
+        showComprehensiveReport();
+      }
+    }
+
+    // Show comprehensive report modal
+    async function showComprehensiveReport() {
+      const modal = document.getElementById('analysis-modal');
+      const details = document.getElementById('analysis-details');
+      
+      try {
+        // Mark report state
+        isReportOpen = true;
+        // Get current student analytics for overall context
+        const res = await fetch(`/analytics/${student}`);
+        const profile = await res.json();
+        
+        // Calculate session-specific stats
+        const totalQuestions = sessionStats.questionsAnswered;
+        const correctAnswers = sessionStats.correctAnswers;
+        const skippedQuestions = sessionStats.skippedQuestions;
+        const accuracyPct = totalQuestions > 0 ? (correctAnswers / totalQuestions * 100) : 0;
+        const avgResponseTime = totalQuestions > 0 ? (sessionStats.totalResponseTime / totalQuestions) : 0;
+        const sessionDuration = sessionStats.sessionStartTime ? 
+          ((Date.now() - sessionStats.sessionStartTime) / 1000 / 60).toFixed(1) : 0; // minutes
+        const engagementLevel = profile.engagement_level || 'Unknown';
+        const learningPace = profile.learning_pace || 'Unknown';
+        
+        details.innerHTML = `
+          <h3>📊 Session Quiz Report</h3>
+          <div class="report-section">
+            <h4>📈 This Session Performance</h4>
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-number">${totalQuestions}</div>
+                <div class="stat-label">Questions Answered</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">${correctAnswers}</div>
+                <div class="stat-label">Correct Answers</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">${skippedQuestions}</div>
+                <div class="stat-label">Skipped Questions</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">${accuracyPct.toFixed(1)}%</div>
+                <div class="stat-label">Session Accuracy</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">${avgResponseTime.toFixed(1)}s</div>
+                <div class="stat-label">Avg Response Time</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">${sessionDuration}m</div>
+                <div class="stat-label">Session Duration</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="report-section">
+            <h4>🎯 Learning Profile</h4>
+            <div class="profile-info">
+              <p><strong>Engagement Level:</strong> <span class="engagement-badge ${engagementLevel}">${engagementLevel.replace('_', ' ').toUpperCase()}</span></p>
+              <p><strong>Learning Pace:</strong> <span class="pace-badge ${learningPace}">${learningPace.toUpperCase()}</span></p>
+              <p><strong>Learning Style:</strong> ${profile.learning_style || 'Unknown'}</p>
+            </div>
+          </div>
+          
+          <div class="report-section">
+            <h4>💡 Recommendations</h4>
+            <div class="recommendations">
+              ${generateRecommendations(profile)}
+            </div>
+          </div>
+          
+          <div class="report-actions">
+            <button class="btn btn-primary" onclick="startNewQuiz()">Start New Quiz</button>
+            <button class="btn btn-secondary" onclick="closeAnalysis()">Close Report</button>
+          </div>
+        `;
+        
+        modal.style.display = 'flex';
+      } catch (error) {
+        console.error('Error loading comprehensive report:', error);
+        details.innerHTML = `
+          <h3>📊 Comprehensive Quiz Report</h3>
+          <p>Error loading report data. Please try again.</p>
+          <button class="btn btn-secondary" onclick="closeAnalysis()">Close</button>
+        `;
+        modal.style.display = 'flex';
+      }
+    }
+
+    // Generate recommendations based on performance
+    function generateRecommendations(profile) {
+      const accuracy = profile.accuracy || 0;
+      const engagement = profile.engagement_level || '';
+      const pace = profile.learning_pace || '';
+      
+      let recommendations = [];
+      
+      if (accuracy < 0.5) {
+        recommendations.push("📚 Focus on fundamental concepts and take your time with each question");
+      } else if (accuracy > 0.8) {
+        recommendations.push("🚀 You're doing great! Consider challenging yourself with harder topics");
+      }
+      
+      if (engagement === 'struggling') {
+        recommendations.push("💪 Try breaking down complex problems into smaller steps");
+      } else if (engagement === 'highly_engaged') {
+        recommendations.push("⭐ Keep up the excellent work! Your engagement is impressive");
+      }
+      
+      if (pace === 'slow') {
+        recommendations.push("⏰ Don't worry about speed - focus on understanding first");
+      } else if (pace === 'fast') {
+        recommendations.push("🎯 Great speed! Make sure you're not rushing through questions");
+      }
+      
+      if (recommendations.length === 0) {
+        recommendations.push("🎉 Keep practicing regularly to maintain your progress!");
+      }
+      
+      return recommendations.map(rec => `<p>${rec}</p>`).join('');
+    }
+
+    // Start a new quiz
+    function startNewQuiz() {
+      closeAnalysis();
+      
+      // Stop any running timer
+      stopTimer();
+      
+      // Reset session stats for new quiz
+      sessionStats = {
+        questionsAnswered: 0,
+        correctAnswers: 0,
+        totalResponseTime: 0,
+        sessionStartTime: null
+      };
+      
+      // Reset UI state
+      document.getElementById('feedback-section').style.display = 'none';
+      document.getElementById('feedback-actions').style.display = 'none';
+      document.getElementById('hint-section').style.display = 'none';
+      document.getElementById('timer').style.display = 'block';
+      
+      // Load new question
       loadQuestion();
     }
-    loadQuestion();
+
+    // Clear current student data only
+    function clearCurrentStudentData() {
+      if (confirm(`This will clear data for ${student} only. Are you sure?`)) {
+        // Clear only current student's data
+        if (student) {
+          localStorage.removeItem(`student_${student}`);
+          // Remove from allStudents list
+          allStudents = allStudents.filter(s => s !== student);
+          localStorage.setItem('allStudents', JSON.stringify(allStudents));
+          loadStudents();
+        }
+        student = null;
+        document.getElementById('student-select').value = '';
+        showNewStudentForm();
+      }
+    }
+
+    // Clear ALL data (admin function)
+    function clearAllData() {
+      if (confirm('⚠️ ADMIN: This will clear ALL student data. Are you absolutely sure?')) {
+        if (confirm('This action cannot be undone. Continue?')) {
+          localStorage.clear();
+          allStudents = [];
+          student = null;
+          document.getElementById('student-select').innerHTML = '<option value="">Select Student</option>';
+          document.getElementById('student-select').value = '';
+          showNewStudentForm();
+        }
+      }
+    }
+
+    // Initialize when page loads
+    init();
   </script>
 </body>
 </html>
