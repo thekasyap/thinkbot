@@ -1,34 +1,28 @@
-import types as pytypes
-
 import main
-
-
-class DummyClient:
-    def __init__(self, captured):
-        self.captured = captured
-
-        class Models:
-            def __init__(self, outer):
-                self.outer = outer
-
-            def generate_content(self, **kwargs):
-                outer = self.outer
-                outer.captured.update(kwargs)
-                return pytypes.SimpleNamespace(text="Hello")
-
-        self.models = Models(self)
 
 
 def test_call_llm(monkeypatch):
     captured = {}
+
+    def fake_post(url, params=None, json=None, timeout=None):
+        captured.update({"url": url, "params": params, "json": json})
+
+        class Resp:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                return {"candidates": [{"content": {"parts": [{"text": "Hello"}]}}]}
+
+        return Resp()
+
     monkeypatch.setattr(main, "GEMINI_API_KEY", "test-key")
-    monkeypatch.setattr(main.genai, "Client", lambda api_key=None: DummyClient(captured))
+    monkeypatch.setattr(main.requests, "post", fake_post)
 
     result = main.call_llm([{"role": "user", "content": "hi"}])
     assert result == "Hello"
-    assert captured["model"] == main.GEMINI_MODEL
-    assert captured["config"].thinking_config.thinking_budget == 0
-    assert captured["contents"][0].role == "user"
+    assert "thinkingBudget" in captured["json"]["generationConfig"]["thinkingConfig"]
+    assert captured["json"]["contents"][0]["role"] == "user"
 
 
 def test_call_llm_without_key(monkeypatch):

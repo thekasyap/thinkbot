@@ -47,3 +47,11 @@ def test_submit_answer_updates_accuracy(monkeypatch):
     assert data["correct"] is True
     assert data["accuracy"] == 1.0
     assert captured["msg"][0]["content"].startswith("Question")
+
+
+def test_root_serves_html():
+    client = TestClient(api.app)
+    res = client.get("/")
+    assert res.status_code == 200
+    assert "<!DOCTYPE html>" in res.text
+
