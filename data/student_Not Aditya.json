@@ -1,0 +1,94 @@
+{
+  "name": "Not Aditya",
+  "quizzes": 8,
+  "correct": 4,
+  "total_response_time": 156.85899999999998,
+  "total_answer_changes": 42,
+  "total_hints_used": 0,
+  "learning_sessions": [
+    {
+      "question_id": 60,
+      "difficulty": "easy",
+      "answer": "circle",
+      "correct": true,
+      "response_time": 5.49,
+      "answer_changes": 6,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:14:54.403268"
+    },
+    {
+      "question_id": 26,
+      "difficulty": "hard",
+      "answer": "64",
+      "correct": false,
+      "response_time": 5.847,
+      "answer_changes": 2,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:15:06.229864"
+    },
+    {
+      "question_id": 10,
+      "difficulty": "medium",
+      "answer": "4",
+      "correct": true,
+      "response_time": 2.874,
+      "answer_changes": 1,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:15:24.521642"
+    },
+    {
+      "question_id": 63,
+      "difficulty": "medium",
+      "answer": "15",
+      "correct": true,
+      "response_time": 3.139,
+      "answer_changes": 2,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:15:35.121037"
+    },
+    {
+      "question_id": 117,
+      "difficulty": "hard",
+      "answer": "0",
+      "correct": true,
+      "response_time": 3.821,
+      "answer_changes": 1,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:15:46.502683"
+    },
+    {
+      "question_id": 131,
+      "difficulty": "hard",
+      "answer": "21",
+      "correct": false,
+      "response_time": 119.894,
+      "answer_changes": 13,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:17:54.522462"
+    },
+    {
+      "question_id": 70,
+      "difficulty": "medium",
+      "answer": "0.5632442",
+      "correct": false,
+      "response_time": 8.177,
+      "answer_changes": 11,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:18:11.668930"
+    },
+    {
+      "question_id": 68,
+      "difficulty": "medium",
+      "answer": "4.99",
+      "correct": false,
+      "response_time": 7.617,
+      "answer_changes": 6,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:18:31.451617"
+    }
+  ],
+  "learning_style": "auditory",
+  "preferred_difficulty": "medium",
+  "engagement_score": 0.3509815625,
+  "last_activity": "2025-09-10T16:18:31.451748"
+}

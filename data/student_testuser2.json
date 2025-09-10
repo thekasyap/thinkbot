@@ -1,0 +1,61 @@
+{
+  "name": "testuser2",
+  "quizzes": 3,
+  "correct": 2,
+  "total_response_time": 26.5,
+  "total_answer_changes": 2,
+  "total_hints_used": 1,
+  "total_skipped": 0,
+  "quiz_sessions": 1,
+  "learning_sessions": [
+    {
+      "question_id": 0,
+      "difficulty": "unknown",
+      "answer": "",
+      "correct": true,
+      "response_time": 0.0,
+      "answer_changes": 0,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T13:42:56.550501"
+    },
+    {
+      "question_id": 1,
+      "difficulty": "easy",
+      "answer": "2",
+      "correct": true,
+      "response_time": 25.5,
+      "answer_changes": 2,
+      "hints_used": 1,
+      "timestamp": "2025-09-10T13:51:04.121564"
+    },
+    {
+      "question_id": 73,
+      "difficulty": "medium",
+      "answer": "0.5",
+      "correct": false,
+      "response_time": 1.0,
+      "answer_changes": 0,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T19:14:13.720752",
+      "topic": "fractions",
+      "skipped": false
+    }
+  ],
+  "learning_style": "unknown",
+  "preferred_difficulty": "medium",
+  "engagement_score": 0.7668055555555555,
+  "last_activity": "2025-09-10T19:14:13.720800",
+  "streak_days": 0,
+  "improvement_trend": 0.0,
+  "session_frequency": 0.0,
+  "difficulty_progression": [
+    "medium"
+  ],
+  "topic_preferences": {
+    "fractions": {
+      "total": 1,
+      "correct": 0,
+      "avg_time": 1.0
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "directtest",
+  "quizzes": 1,
+  "correct": 1,
+  "total_response_time": 0.0,
+  "total_answer_changes": 0,
+  "total_hints_used": 0,
+  "learning_sessions": [
+    {
+      "question_id": 0,
+      "difficulty": "unknown",
+      "answer": "",
+      "correct": true,
+      "response_time": 0.0,
+      "answer_changes": 0,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T13:45:37.058382"
+    }
+  ],
+  "learning_style": "unknown",
+  "preferred_difficulty": "medium",
+  "engagement_score": 1.0,
+  "last_activity": "2025-09-10T13:45:37.058409"
+}
