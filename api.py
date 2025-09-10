@@ -43,6 +43,11 @@ def read_root():
     with open("static/index.html", "r") as f:
         return HTMLResponse(f.read())
 
+@app.get("/test-math")
+def test_math():
+    result = is_mathematically_equivalent("0.5", "1/2")
+    return {"test": "0.5 == 1/2", "result": result}
+
 
 def normalize_answer(answer: str) -> str:
     """Normalize answer for comparison by removing extra spaces and converting to lowercase."""
@@ -162,6 +167,7 @@ def submit_answer(payload: AnswerPayload):
         raise HTTPException(status_code=404, detail="Unknown question")
     
     correct = is_mathematically_equivalent(payload.answer, q["answer"])
+    print(f"DEBUG: Comparing '{payload.answer}' with '{q['answer']}' -> {correct}")
     
     # Record comprehensive session data
     profile.record_session(

@@ -8,6 +8,8 @@ from __future__ import annotations
 import json
 import random
 from pathlib import Path
+from fractions import Fraction
+from decimal import Decimal, InvalidOperation
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
@@ -36,6 +38,110 @@ app = FastAPI(title="ThinkBot API")
 
 # serve static files and root index for convenience when deployed
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+def normalize_answer(answer: str) -> str:
+    """Normalize answer for comparison by removing extra spaces and converting to lowercase."""
+    return answer.strip().lower()
+
+
+def _is_smart_substring_match(user_answer: str, correct_answer: str) -> bool:
+    """Smart substring matching that avoids mathematical false positives."""
+    # Don't do substring matching if either answer looks like a number
+    if _looks_like_number(user_answer) or _looks_like_number(correct_answer):
+        return False
+    
+    # Handle exact matches first
+    if user_answer == correct_answer:
+        return True
+    
+    # Check if correct answer is contained in user answer (with word boundaries)
+    if correct_answer in user_answer:
+        # Make sure it's not just a partial match within a word
+        # Check if it's at the start, end, or surrounded by spaces/punctuation
+        if (user_answer.startswith(correct_answer + ' ') or 
+            user_answer.endswith(' ' + correct_answer) or
+            ' ' + correct_answer + ' ' in user_answer):
+            return True
+    
+    # Check if user answer is contained in correct answer (with word boundaries)
+    if user_answer in correct_answer:
+        if (correct_answer.startswith(user_answer + ' ') or 
+            correct_answer.endswith(' ' + user_answer) or
+            ' ' + user_answer + ' ' in correct_answer):
+            return True
+    
+    return False
+
+def _looks_like_number(text: str) -> bool:
+    """Check if text looks like a number (including decimals, fractions, etc.)."""
+    # Remove common non-numeric characters that might be in text
+    cleaned = text.replace(',', '').replace(' ', '').replace('-', '')
+    
+    # Check if it's mostly numeric characters
+    if not cleaned:
+        return False
+    
+    # Count numeric characters
+    numeric_chars = sum(1 for c in cleaned if c.isdigit() or c in './-')
+    total_chars = len(cleaned)
+    
+    # If more than 50% of characters are numeric, consider it a number
+    return numeric_chars / total_chars > 0.5
+
+def is_mathematically_equivalent(answer1: str, answer2: str) -> bool:
+    """Check if two answers are mathematically equivalent."""
+    # First try exact string match (case insensitive)
+    if normalize_answer(answer1) == normalize_answer(answer2):
+        return True
+    
+    # Try to convert both to numbers and compare
+    try:
+        # Handle fractions like "1/2", "1/3", etc.
+        if '/' in answer1 and '/' in answer2:
+            frac1 = Fraction(answer1)
+            frac2 = Fraction(answer2)
+            return frac1 == frac2
+        
+        # Handle decimal numbers (exact match only)
+        try:
+            dec1 = Decimal(answer1)
+            dec2 = Decimal(answer2)
+            if dec1 == dec2:
+                return True
+        except (InvalidOperation, ValueError):
+            pass
+        
+        # Try converting one to fraction and one to decimal
+        if '/' in answer1:
+            frac1 = Fraction(answer1)
+            try:
+                dec2 = Decimal(answer2)
+                return float(frac1) == float(dec2)
+            except (InvalidOperation, ValueError):
+                pass
+        elif '/' in answer2:
+            frac2 = Fraction(answer2)
+            try:
+                dec1 = Decimal(answer1)
+                return float(dec1) == float(frac2)
+            except (InvalidOperation, ValueError):
+                pass
+        
+        # Try converting both to float for comparison
+        try:
+            float1 = float(answer1)
+            float2 = float(answer2)
+            # Use a more reasonable epsilon for decimal comparisons
+            # This handles cases like 0.2222222222 vs 0.222
+            return abs(float1 - float2) < 1e-3  # 0.001 tolerance for decimal comparisons
+        except (ValueError, TypeError):
+            pass
+            
+    except (ValueError, TypeError, ZeroDivisionError):
+        pass
+    
+    return False
 
 @app.get("/", response_class=HTMLResponse)
 def root() -> str:
@@ -146,62 +252,54 @@ def submit_answer(payload: AnswerPayload):
     if not q:
         raise HTTPException(status_code=404, detail="Unknown question")
     
-    # More flexible answer matching
-    def is_answer_correct(user_answer: str, correct_answer: str) -> bool:
-        user_clean = user_answer.strip().lower()
-        correct_clean = correct_answer.strip().lower()
-        
-        # Exact match
-        if user_clean == correct_clean:
-            return True
-        
-        # For numerical answers, be more strict - only allow exact matches or specific variations
-        if user_clean.replace('.', '').replace('-', '').isdigit() or correct_clean.replace('.', '').replace('-', '').isdigit():
-            # For numerical answers, only check exact match and specific variations
-            # Don't use substring matching for numbers
-            pass
-        else:
-            # For non-numerical answers, use substring matching
-            # Check if user answer contains the correct answer (for cases like "Pacific Ocean" vs "Pacific")
-            if correct_clean in user_clean:
-                return True
-                
-            # Check if correct answer contains user answer (for cases like "Pacific" vs "Pacific Ocean")
-            if user_clean in correct_clean:
-                return True
-            
-        # Check for common variations
-        variations = {
-            "pacific ocean": ["pacific", "pacific ocean"],
-            "atlantic ocean": ["atlantic", "atlantic ocean"],
-            "indian ocean": ["indian", "indian ocean"],
-            "arctic ocean": ["arctic", "arctic ocean"],
-            "southern ocean": ["southern", "southern ocean"],
-            "north america": ["north america", "north american"],
-            "south america": ["south america", "south american"],
-            "united states": ["usa", "us", "united states", "america"],
-            "united kingdom": ["uk", "britain", "united kingdom", "england"],
-            "25π": ["25pi", "25 pi", "25*π", "25 * π"],
-            "36π": ["36pi", "36 pi", "36*π", "36 * π"],
-            "10π": ["10pi", "10 pi", "10*π", "10 * π"],
-            "a² + b² = c²": ["a^2 + b^2 = c^2", "a squared plus b squared equals c squared"],
-            "0.625": ["625/1000", "5/8"],
-            "5/6": ["10/12", "0.833"],
-            "32": ["2^5", "2 to the power of 5"],
-            "81": ["3^4", "3 to the power of 4"]
-        }
-        
-        for correct_key, variants in variations.items():
-            if correct_clean == correct_key:
-                if user_clean in variants:
-                    return True
-            elif user_clean == correct_key:
-                if correct_clean in variants:
-                    return True
-        
-        return False
+    # Use mathematical equivalence for numerical answers, exact match for others
+    user_clean = payload.answer.strip().lower()
+    correct_clean = q["answer"].strip().lower()
     
-    correct = is_answer_correct(payload.answer, q["answer"])
+    # Check if this is a numerical answer (contains numbers, fractions, or decimals)
+    is_numerical = any(char.isdigit() or char in './-' for char in user_clean + correct_clean)
+    
+    if is_numerical:
+        # Use mathematical equivalence for numerical answers
+        correct = is_mathematically_equivalent(payload.answer, q["answer"])
+    else:
+        # Use exact match for non-numerical answers
+        correct = user_clean == correct_clean
+        
+        # Check for common variations for non-numerical answers
+        if not correct:
+            # First, try smart substring matching for text answers only
+            # This handles cases like "madrid city" vs "madrid" but avoids math issues
+            if _is_smart_substring_match(user_clean, correct_clean):
+                correct = True
+            
+            # If still not correct, check specific hardcoded variations
+            if not correct:
+                variations = {
+                    "pacific ocean": ["pacific", "pacific ocean"],
+                    "atlantic ocean": ["atlantic", "atlantic ocean"],
+                    "indian ocean": ["indian", "indian ocean"],
+                    "arctic ocean": ["arctic", "arctic ocean"],
+                    "southern ocean": ["southern", "southern ocean"],
+                    "north america": ["north america", "north american"],
+                    "south america": ["south america", "south american"],
+                    "united states": ["usa", "us", "united states", "america"],
+                    "united kingdom": ["uk", "britain", "united kingdom", "england"],
+                    "25π": ["25pi", "25 pi", "25*π", "25 * π"],
+                    "36π": ["36pi", "36 pi", "36*π", "36 * π"],
+                    "10π": ["10pi", "10 pi", "10*π", "10 * π"],
+                    "a² + b² = c²": ["a^2 + b^2 = c^2", "a squared plus b squared equals c squared"],
+                }
+                
+                for correct_key, variants in variations.items():
+                    if correct_clean == correct_key:
+                        if user_clean in variants:
+                            correct = True
+                            break
+                    elif user_clean == correct_key:
+                        if correct_clean in variants:
+                            correct = True
+                            break
     
     # Record comprehensive session data with enhanced engagement tracking
     profile.record_session(
