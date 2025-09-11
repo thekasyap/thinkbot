@@ -706,6 +706,26 @@
       border: 1px solid #e0e0e0;
     }
 
+    /* LaTeX fraction styling */
+    .feedback-text .math-fraction {
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+      margin: 0 2px;
+      font-family: 'Courier New', monospace;
+      font-size: 1.1em;
+    }
+    .feedback-text .math-fraction .numerator {
+      display: block;
+      border-bottom: 1px solid #2c3e50;
+      padding-bottom: 1px;
+      margin-bottom: 1px;
+    }
+    .feedback-text .math-fraction .denominator {
+      display: block;
+      padding-top: 1px;
+    }
+
     /* Code styling */
     .feedback-text pre {
       background: #f8f9fa;
@@ -2030,6 +2050,8 @@
         .replace(/\$\$(.*?)\$\$/gs, '<div class="math-block">$1</div>')
         // Inline math $...$ -> styled inline math
         .replace(/\$([^$]+)\$/g, '<span class="math-inline">$1</span>')
+        // LaTeX fractions \frac{numerator}{denominator} -> styled fractions
+        .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction"><span class="numerator">$1</span><span class="denominator">$2</span></span>')
         // Code blocks ```...``` -> <pre><code>...</code></pre>
         .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
         // Inline code `...` -> <code>...</code>
