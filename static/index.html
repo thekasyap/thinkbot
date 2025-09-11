@@ -645,6 +645,111 @@
       margin-bottom: 0;
     }
 
+    /* Header styling for feedback */
+    .feedback-text h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 20px 0 15px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .feedback-text h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #34495e;
+      margin: 18px 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #bdc3c7;
+    }
+
+    .feedback-text h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #34495e;
+      margin: 15px 0 10px 0;
+      padding-left: 8px;
+      border-left: 3px solid #667eea;
+    }
+
+    .feedback-text hr {
+      border: none;
+      height: 2px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      margin: 20px 0;
+      border-radius: 1px;
+    }
+
+    /* Math styling */
+    .feedback-text .math-block {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem;
+      text-align: center;
+      color: #2c3e50;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-left: 4px solid #667eea;
+    }
+
+    .feedback-text .math-inline {
+      background: #f1f3f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95em;
+      color: #2c3e50;
+      border: 1px solid #e0e0e0;
+    }
+
+    /* Code styling */
+    .feedback-text pre {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 12px 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #2c3e50;
+    }
+
+    .feedback-text code {
+      background: #f1f3f4;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #d63384;
+      border: 1px solid #e0e0e0;
+    }
+
+    .feedback-text pre code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: inherit;
+    }
+
+    /* Link styling */
+    .feedback-text a {
+      color: #667eea;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .feedback-text a:hover {
+      color: #5a67d8;
+      border-bottom-color: #5a67d8;
+    }
+
     .correct-answer {
       color: #27ae60;
       font-weight: 600;
@@ -1915,6 +2020,22 @@
     // Convert Markdown to HTML for better formatting
     function markdownToHtml(text) {
       return text
+        // Headers: ### -> h3, ## -> h2, # -> h1
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        // Horizontal rules --- -> <hr>
+        .replace(/^---$/gm, '<hr>')
+        // LaTeX math blocks $$...$$ -> styled math display
+        .replace(/\$\$(.*?)\$\$/gs, '<div class="math-block">$1</div>')
+        // Inline math $...$ -> styled inline math
+        .replace(/\$([^$]+)\$/g, '<span class="math-inline">$1</span>')
+        // Code blocks ```...``` -> <pre><code>...</code></pre>
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+        // Inline code `...` -> <code>...</code>
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        // Links [text](url) -> <a href="url">text</a>
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
         // Bold text **text** -> <strong>text</strong>
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         // Italic text *text* -> <em>text</em> (but not if it's part of **)
@@ -1927,8 +2048,8 @@
         .replace(/^\d+\. /gm, (match) => match)
         // Multiple line breaks -> paragraph breaks
         .replace(/(<br>\s*){2,}/g, '</p><p>')
-        // Wrap in paragraph tags if not already wrapped
-        .replace(/^(?!<p>)(.+)$/gm, '<p>$1</p>')
+        // Wrap in paragraph tags if not already wrapped (but not headers, hr, math, pre, or code)
+        .replace(/^(?!<[phrdc])(.+)$/gm, '<p>$1</p>')
         // Clean up empty paragraphs
         .replace(/<p><\/p>/g, '')
         // Clean up paragraphs that only contain <br>
