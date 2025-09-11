@@ -1,0 +1,184 @@
+{
+  "name": "Sahil",
+  "quizzes": 17,
+  "correct": 12,
+  "total_response_time": 834.9669999999998,
+  "total_answer_changes": 279,
+  "total_hints_used": 0,
+  "learning_sessions": [
+    {
+      "question_id": 8,
+      "difficulty": "easy",
+      "answer": "no",
+      "correct": false,
+      "response_time": 5.524,
+      "answer_changes": 16,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:26:17.195742"
+    },
+    {
+      "question_id": 8,
+      "difficulty": "easy",
+      "answer": "no",
+      "correct": false,
+      "response_time": 6.786,
+      "answer_changes": 16,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:26:18.457106"
+    },
+    {
+      "question_id": 6,
+      "difficulty": "easy",
+      "answer": "black",
+      "correct": false,
+      "response_time": 283.371,
+      "answer_changes": 40,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:32:31.492891"
+    },
+    {
+      "question_id": 6,
+      "difficulty": "easy",
+      "answer": "black",
+      "correct": false,
+      "response_time": 286.487,
+      "answer_changes": 40,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:32:34.595890"
+    },
+    {
+      "question_id": 7,
+      "difficulty": "easy",
+      "answer": "3",
+      "correct": true,
+      "response_time": 182.068,
+      "answer_changes": 11,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:36:59.237761"
+    },
+    {
+      "question_id": 3,
+      "difficulty": "easy",
+      "answer": "2",
+      "correct": true,
+      "response_time": 2.286,
+      "answer_changes": 12,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:37:06.785120"
+    },
+    {
+      "question_id": 5,
+      "difficulty": "easy",
+      "answer": "2",
+      "correct": true,
+      "response_time": 2.661,
+      "answer_changes": 1,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:37:14.895554"
+    },
+    {
+      "question_id": 14,
+      "difficulty": "medium",
+      "answer": "15",
+      "correct": true,
+      "response_time": 9.884,
+      "answer_changes": 28,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:37:30.104912"
+    },
+    {
+      "question_id": 17,
+      "difficulty": "medium",
+      "answer": "0.75",
+      "correct": true,
+      "response_time": 7.805,
+      "answer_changes": 60,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:37:43.148923"
+    },
+    {
+      "question_id": 18,
+      "difficulty": "medium",
+      "answer": "16",
+      "correct": true,
+      "response_time": 9.228,
+      "answer_changes": 32,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T14:37:58.371891"
+    },
+    {
+      "question_id": 10,
+      "difficulty": "medium",
+      "answer": "4",
+      "correct": true,
+      "response_time": 4.495,
+      "answer_changes": 1,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T15:41:24.453777"
+    },
+    {
+      "question_id": 13,
+      "difficulty": "medium",
+      "answer": "24",
+      "correct": true,
+      "response_time": 5.917,
+      "answer_changes": 2,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T15:41:36.412030"
+    },
+    {
+      "question_id": 6,
+      "difficulty": "easy",
+      "answer": "purple",
+      "correct": true,
+      "response_time": 5.3,
+      "answer_changes": 6,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T15:41:49.179936"
+    },
+    {
+      "question_id": 6,
+      "difficulty": "easy",
+      "answer": "purple",
+      "correct": true,
+      "response_time": 7.336,
+      "answer_changes": 6,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T15:42:05.916346"
+    },
+    {
+      "question_id": 4,
+      "difficulty": "easy",
+      "answer": "2",
+      "correct": true,
+      "response_time": 4.829,
+      "answer_changes": 1,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T15:42:16.909951"
+    },
+    {
+      "question_id": 9,
+      "difficulty": "medium",
+      "answer": "15",
+      "correct": true,
+      "response_time": 4.142,
+      "answer_changes": 2,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:04:59.289039"
+    },
+    {
+      "question_id": 83,
+      "difficulty": "medium",
+      "answer": "wuhan",
+      "correct": false,
+      "response_time": 6.848,
+      "answer_changes": 5,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:05:13.403938"
+    }
+  ],
+  "learning_style": "auditory",
+  "preferred_difficulty": "medium",
+  "engagement_score": -0.3639657352941176,
+  "last_activity": "2025-09-10T16:05:13.404269"
+}

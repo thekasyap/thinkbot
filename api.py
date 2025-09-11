@@ -13,7 +13,7 @@ from fractions import Fraction
 from decimal import Decimal, InvalidOperation
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -36,6 +36,12 @@ app = FastAPI(title="ThinkBot API")
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Serve favicon
+@app.get("/favicon.svg", include_in_schema=False)
+async def favicon():
+    """Serve the site's favicon."""
+    return FileResponse("static/favicon.svg")
 
 # Serve the main HTML file at the root
 @app.get("/")

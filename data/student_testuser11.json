@@ -1,0 +1,41 @@
+{
+  "name": "testuser11",
+  "quizzes": 1,
+  "correct": 0,
+  "total_response_time": 1.0,
+  "total_answer_changes": 0,
+  "total_hints_used": 0,
+  "total_skipped": 0,
+  "quiz_sessions": 0,
+  "learning_sessions": [
+    {
+      "question_id": 73,
+      "difficulty": "medium",
+      "answer": "0.5",
+      "correct": false,
+      "response_time": 1.0,
+      "answer_changes": 0,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T19:18:19.555727",
+      "topic": "fractions",
+      "skipped": false
+    }
+  ],
+  "learning_style": "unknown",
+  "preferred_difficulty": "medium",
+  "engagement_score": 0.4975,
+  "last_activity": "2025-09-10T19:18:19.555751",
+  "streak_days": 0,
+  "improvement_trend": 0.0,
+  "session_frequency": 0.0,
+  "difficulty_progression": [
+    "medium"
+  ],
+  "topic_preferences": {
+    "fractions": {
+      "total": 1,
+      "correct": 0,
+      "avg_time": 1.0
+    }
+  }
+}

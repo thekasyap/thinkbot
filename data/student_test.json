@@ -1,0 +1,44 @@
+{
+  "name": "test",
+  "quizzes": 3,
+  "correct": 2,
+  "total_response_time": 15.0,
+  "total_answer_changes": 0,
+  "total_hints_used": 0,
+  "learning_sessions": [
+    {
+      "question_id": 117,
+      "difficulty": "hard",
+      "answer": "0",
+      "correct": false,
+      "response_time": 5.0,
+      "answer_changes": 0,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:16:56.489106"
+    },
+    {
+      "question_id": 117,
+      "difficulty": "hard",
+      "answer": "0.875",
+      "correct": true,
+      "response_time": 5.0,
+      "answer_changes": 0,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:17:07.493497"
+    },
+    {
+      "question_id": 117,
+      "difficulty": "hard",
+      "answer": "0.875",
+      "correct": true,
+      "response_time": 5.0,
+      "answer_changes": 0,
+      "hints_used": 0,
+      "timestamp": "2025-09-10T16:26:35.524342"
+    }
+  ],
+  "learning_style": "unknown",
+  "preferred_difficulty": "medium",
+  "engagement_score": 0.8208333333333333,
+  "last_activity": "2025-09-10T16:26:35.524370"
+}
